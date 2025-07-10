@@ -105,9 +105,7 @@ fun ProductCard(
                         }
                     }
                 } else {
-                    // Precio con estilo dorado
                     Text(
-                        // tiene que quedar mas abajo
                         modifier = Modifier.align(Alignment.Bottom),
                         text = "$${product.price}",
                         style = MaterialTheme.typography.bodyMedium,
