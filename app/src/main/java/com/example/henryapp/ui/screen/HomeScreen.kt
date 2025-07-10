@@ -27,7 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +57,7 @@ fun HomeScreen(
 ) {
     val cartItems = cartViewModel.cartItems.collectAsState()
     val categories = listOf("All", "Combos", "Sliders", "Classics", "Veggie", "Chicken", "Beef", "Fish", "Desserts")
-    val selectedCategoryIndex = remember { mutableStateOf(0) }
+    val selectedCategoryIndex = remember { mutableIntStateOf(0) }
 
     Scaffold(
         bottomBar = {
@@ -142,15 +142,15 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (index == selectedCategoryIndex.value) golden else Color.LightGray,
+                                color = if (index == selectedCategoryIndex.intValue) golden else Color.LightGray,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .clickable { selectedCategoryIndex.value = index }
+                            .clickable { selectedCategoryIndex.intValue = index }
                     ) {
                         Text(
                             text = category,
-                            color = if (index == selectedCategoryIndex.value) Color.White else Color.Black
+                            color = if (index == selectedCategoryIndex.intValue) Color.White else Color.Black
                         )
                     }
                 }
