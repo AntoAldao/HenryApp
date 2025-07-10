@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,9 +35,13 @@ import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.ui.theme.goldenTransparent
 import com.example.henryapp.viewmodel.RegisterViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuccess: () -> Unit) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(
         key1 = listOf(
             viewModel.name.value,
@@ -44,6 +53,15 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
         )
     ) {
         viewModel.validateForm()
+    }
+
+    LaunchedEffect(viewModel.errorMessage.value) {
+        viewModel.errorMessage.value?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+            }
+            viewModel.errorMessage.value = null
+        }
     }
 
     Box(
@@ -59,6 +77,11 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
             )
             .padding(horizontal = 16.dp),
     ) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -166,6 +189,12 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                     )
                     onRegisterSuccess()
                 },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black,
+                    disabledContainerColor = Color.LightGray
+
+                ),
                 enabled = viewModel.isFormValid.value,
                 modifier = Modifier.requiredHeight(40.dp).align(Alignment.CenterHorizontally)
             ) {

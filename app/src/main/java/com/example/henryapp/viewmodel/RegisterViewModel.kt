@@ -3,8 +3,8 @@ package com.example.henryapp.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.henryapp.model.data.entity.User
 import com.example.henryapp.model.data.dao.UserDao
+import com.example.henryapp.model.data.entity.User
 import com.example.henryapp.utils.HashPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -13,6 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val userDao: UserDao
+
 ) : ViewModel() {
 
     val name = mutableStateOf("")
@@ -26,6 +27,7 @@ class RegisterViewModel @Inject constructor(
     val isPasswordValid = mutableStateOf(true)
     val isPasswordMatch = mutableStateOf(true)
     val isFormValid = mutableStateOf(false)
+    val errorMessage = mutableStateOf<String?>(null)
 
     fun validateForm() {
         isEmailValid.value = email.value.contains("@")
@@ -47,7 +49,7 @@ class RegisterViewModel @Inject constructor(
             try {
                 val existingUser = userDao.getUserByEmail(email.value)
                 if (existingUser != null) {
-                    onError("El correo ya está registrado. Por favor, usa otro.")
+                    errorMessage.value = "El correo ya está registrado. Por favor, usa otro."
                     return@launch
                 }
 
@@ -62,7 +64,7 @@ class RegisterViewModel @Inject constructor(
                 userDao.insertUser(user)
                 onSuccess()
             } catch (e: Exception) {
-                onError(e.message ?: "Error al registrarse")
+                errorMessage.value = e.message ?: "Error al registrarse"
             }
         }
     }
