@@ -24,6 +24,7 @@ fun CustomOutlinedTextField(
     cornerRadius: Dp = 16.dp,
     isPassword: Boolean = false,
     borderColor: Color = Color.White,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
@@ -46,7 +47,8 @@ fun CustomOutlinedTextField(
             disabledTextColor = Color.Black,
             disabledLabelColor = Color.Black,
             disabledBorderColor = borderColor
-        )
+        ),
+        enabled = enabled,
 
     )
 }

@@ -3,24 +3,36 @@ package com.example.henryapp.ui.screen
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,171 +44,297 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.henryapp.navigation.BottomNavigationBar
+import com.example.henryapp.ui.componets.CustomOutlinedTextField
+import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.viewmodel.ProfileViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    userEmail: String,  // Recibimos el email para cargar el usuario
-    viewModel: ProfileViewModel = hiltViewModel()
+    userEmail: String,
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onLogout: () -> Unit
 ) {
-    // Cargar usuario solo una vez al entrar
-    LaunchedEffect(userEmail) {
-        viewModel.loadUser(userEmail)
-    }
-
+    val context = LocalContext.current
+    LaunchedEffect(userEmail) { viewModel.loadUser(userEmail) }
     val user by viewModel.user
 
-    // Maneja los campos del formulario
-    var name by remember { mutableStateOf(user?.name?: "") }
-    var lastName by remember { mutableStateOf(user?.lastName?:"") }
-    var emailState by remember { mutableStateOf(userEmail)}
-    var password by remember { mutableStateOf(user?.hashedPassword ?: "") }
-    var nationality by remember { mutableStateOf(user?.nationality ?: "") }
-    var imageUri by remember { mutableStateOf<Uri?>(user?.imageUrl?.let { Uri.parse(it) }) }
-    var imagePreviewUrl by remember { mutableStateOf<String?>(user?.imageUrl ?: "") }
+    var isEditing by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    var showSuccessMessage by remember { mutableStateOf(false) }
 
-    // Contexto para la subida de imágenes
-    val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var nationality by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imagePreviewUrl by remember { mutableStateOf<String?>(null) }
 
-    // Actualiza los valores de los campos cuando el usuario cambia
     LaunchedEffect(user) {
         user?.let {
             name = it.name
             lastName = it.lastName
-            emailState = it.email
             nationality = it.nationality
-            imagePreviewUrl = it.imageUrl // Previsualizar imagen almacenada
+            password = it.hashedPassword
+            imagePreviewUrl = it.imageUrl
         }
     }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        imageUri = uri
-    }
+    ) { uri -> imageUri = uri }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Perfil") })
-        },
-        bottomBar = {
-            BottomNavigationBar(navController, userEmail)
+    Scaffold (
+        snackbarHost = {
+            androidx.compose.material3.SnackbarHost(hostState = snackbarHostState)
         }
-    ) { contentPadding ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(golden)
+                .padding(paddingValues)
         ) {
-            // Image Upload
-            Card(
-                shape = CircleShape,
+            Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .padding(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
             ) {
-                if (imageUri != null) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUri),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else if (!imagePreviewUrl.isNullOrEmpty()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imagePreviewUrl),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Text(
-                        text = "Cargar Imagen",
-                        color = Color.Gray,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                //boton para volver al home <-
+                OutlinedButton(
+                    onClick = { navController.navigate("home/$userEmail") },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .offset(x = (-10).dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        containerColor = Color.Transparent
+                    ),
+                    border = BorderStroke(1.dp, Color.Transparent)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver al home",
+                        tint = Color.White,
                     )
                 }
+
+
+                Card(
+//                shape = CircleShape,
+                    modifier = Modifier.size(120.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    when {
+                        imageUri != null -> Image(
+                            painter = rememberAsyncImagePainter(imageUri),
+                            contentDescription = "Imagen de perfil",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        !imagePreviewUrl.isNullOrEmpty() -> Image(
+                            painter = rememberAsyncImagePainter(imagePreviewUrl),
+                            contentDescription = "Imagen de perfil",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-                Text("Cargar Imagen")
+
+            LaunchedEffect(showSuccessMessage) {
+                if (showSuccessMessage) {
+                    snackbarHostState.showSnackbar("Perfil actualizado correctamente")
+                    showSuccessMessage = false
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Form Fields
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                label = { Text("Apellido") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = emailState,
-                onValueChange = { emailState = it },
-                label = { Text("Email") },
-                enabled = false, // Deshabilitado para evitar cambios en el correo
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = nationality,
-                onValueChange = { nationality = it },
-                label = { Text("Nacionalidad") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    viewModel.updateUser(
-                        context = context,
-                        name = name,
-                        lastName = lastName,
-                        nationality = nationality,
-                        imageUri = imageUri,
-                        onSuccess = {
-                            // Muestra un mensaje de éxito
-                            println("Perfil actualizado correctamente.")
-                        },
-                        onError = { error ->
-                            // Maneja el error,
-                            println("Error: $error")
-                        }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                     )
-                },
-                modifier = Modifier.fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Text("Guardar Cambios")
+                Column(modifier = Modifier.fillMaxSize()) {
+
+                    if (isEditing) {
+                        OutlinedButton(
+                            onClick = { imagePickerLauncher.launch("image/*") },
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.White,
+                                containerColor = Color.Black,
+                            ),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "Subir imagen",
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Subir Imagen", color = Color.White)
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    CustomOutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = "Nombre",
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isEditing,
+                        borderColor = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CustomOutlinedTextField(
+                        value = lastName,
+                        onValueChange = { lastName = it },
+                        label = "Apellido",
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isEditing,
+                        borderColor = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CustomOutlinedTextField(
+                        value = userEmail,
+                        onValueChange = {},
+                        label = "Email",
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = false,
+                        borderColor = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CustomOutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = "Contraseña",
+                        modifier = Modifier.fillMaxWidth(),
+                        isPassword = true,
+                        enabled = isEditing,
+                        borderColor = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    CustomOutlinedTextField(
+                        value = nationality,
+                        onValueChange = { nationality = it },
+                        label = "Nacionalidad",
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isEditing,
+                        borderColor = Color.Black
+                    )
+
+
+                    if (isEditing) {
+                        Spacer(modifier = Modifier.height(130.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    viewModel.updateUser(
+                                        context,
+                                        name,
+                                        lastName,
+                                        nationality,
+                                        imageUri,
+                                        onSuccess = {
+                                            isEditing = false
+                                            showSuccessMessage = true
+                                        },
+                                        onError = { println("Error: $it") }
+                                    )
+                                },
+                                modifier = Modifier.requiredHeight(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.Green,
+                                    containerColor = Color.Transparent
+                                ),
+                                border = BorderStroke(2.dp, Color.Green),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "Confirmar",
+                                    tint = Color.Green
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Confirmar", color = Color.Green)
+                            }
+                            OutlinedButton(
+                                onClick = { isEditing = false },
+                                modifier = Modifier.requiredHeight(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.Red,
+                                    containerColor = Color.Transparent
+                                ),
+                                border = BorderStroke(2.dp, Color.Red),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Cancelar",
+                                    tint = Color.Red
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Cancelar", color = Color.Red)
+                            }
+                        }
+                    } else {
+
+                        Spacer(modifier = Modifier.height(190.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            OutlinedButton(
+                                onClick = { isEditing = true },
+                                modifier = Modifier.requiredHeight(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.White,
+                                    containerColor = Color.Black,
+                                ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Editar perfil",
+                                    tint = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Editar Perfil")
+                            }
+                            OutlinedButton(
+                                onClick = { onLogout() },
+                                modifier = Modifier
+                                    .requiredHeight(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.White,
+                                    containerColor = Color.Transparent
+                                ),
+                                border = BorderStroke(2.dp, Color.Red),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                    contentDescription = "Cerrar sesión",
+                                    tint = Color.Red
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Cerrar sesión", color = Color.Red)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

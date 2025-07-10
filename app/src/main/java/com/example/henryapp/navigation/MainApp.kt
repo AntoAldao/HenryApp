@@ -54,7 +54,13 @@ fun MainApp() {
         composable("profile/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val profileViewModel: ProfileViewModel = hiltViewModel()
-            ProfileScreen(navController, email, profileViewModel)
+            ProfileScreen(navController, email, profileViewModel,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo("home/{email}") { inclusive = true }
+                    }
+                }
+            )
         }
         composable("cart/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
