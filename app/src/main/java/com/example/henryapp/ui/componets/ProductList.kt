@@ -2,6 +2,7 @@ package com.example.henryapp.ui.componets
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -24,34 +25,50 @@ fun ProductList(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(products) { product ->
-            // Busca el ítem del carrito correspondiente al producto
-            val cartItem = cartItems.find { it.id == product.id }
-            val quantity = cartItem?.quantity ?: 0
+        items(products.chunked(2)) { rowItems ->  // Agrupa de 2 en 2
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                rowItems.forEach { product ->
+                    val cartItem = cartItems.find { it.id == product.id }
+                    val quantity = cartItem?.quantity ?: 0
 
-            ProductCard(
-                product = product,
-                quantity = quantity,
-                onIncreaseQuantity = {
-                    if (cartItem != null) {
-                        onIncreaseQuantity(cartItem)
-                    } else {
-                        onAddToCart(product, 1)
-                    }
-                },
-                onDecreaseQuantity = {
-                    if (cartItem != null && cartItem.quantity > 0) {
-                        onDecreaseQuantity(cartItem)
-                    }
-                },
-                onAddToCart = { prod, qty -> onAddToCart(prod, qty) },
-                removeFromCart = {
-                    if (cartItem != null) {
-                        removeFromCart(cartItem)
+                    // Cada card ocupa el 50% del ancho
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                    ) {
+                        ProductCard(
+                            product = product,
+                            quantity = quantity,
+                            onIncreaseQuantity = {
+                                if (cartItem != null) {
+                                    onIncreaseQuantity(cartItem)
+                                } else {
+                                    onAddToCart(product, 1)
+                                }
+                            },
+                            onDecreaseQuantity = {
+                                if (cartItem != null && cartItem.quantity > 0) {
+                                    onDecreaseQuantity(cartItem)
+                                }
+                            },
+                            onAddToCart = { prod, qty -> onAddToCart(prod, qty) },
+                            removeFromCart = {
+                                if (cartItem != null) {
+                                    removeFromCart(cartItem)
+                                }
+                            }
+                        )
                     }
                 }
 
-            )
+                //espacio por si es impar
+                if (rowItems.size < 2) {
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }

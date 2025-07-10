@@ -10,5 +10,5 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val golden = Color(0xFFFFD700)
-val goldenTransparent = Color(0xFFFFD700).copy(alpha = 0.6f)
+val golden = Color(0xFFEBD046)
+val goldenTransparent = Color(0xFFEBD046).copy(alpha = 0.6f)
