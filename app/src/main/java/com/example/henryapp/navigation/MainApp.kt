@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.henryapp.ui.screen.CartScreen
 import com.example.henryapp.ui.screen.HomeScreen
 import com.example.henryapp.ui.screen.LoginScreen
+import com.example.henryapp.ui.screen.OrderDetailScreen
 import com.example.henryapp.ui.screen.OrdersScreen
 import com.example.henryapp.ui.screen.ProfileScreen
 import com.example.henryapp.ui.screen.RegisterScreen
@@ -79,6 +80,12 @@ fun MainApp() {
                     }
                 }
             )
+        }
+        composable("orderDetail/{email}/{orderId}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val orderId = backStackEntry.arguments?.getString("orderId")?.toLong() ?: 0L
+            val orderViewModel: OrderViewModel = hiltViewModel()
+            OrderDetailScreen(navController, orderId, orderViewModel, email)
         }
     }
 }

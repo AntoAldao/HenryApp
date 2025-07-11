@@ -30,10 +30,9 @@ fun ProductList(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 rowItems.forEach { product ->
-                    val cartItem = cartItems.find { it.id == product.id }
+                    val cartItem = cartItems.find { it.name == product.name }
                     val quantity = cartItem?.quantity ?: 0
 
-                    // Cada card ocupa el 50% del ancho
                     androidx.compose.foundation.layout.Box(
                         modifier = Modifier
                             .weight(1f)
@@ -64,7 +63,6 @@ fun ProductList(
                     }
                 }
 
-                //espacio por si es impar
                 if (rowItems.size < 2) {
                     androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
                 }

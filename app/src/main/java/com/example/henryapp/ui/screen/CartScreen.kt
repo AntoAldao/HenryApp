@@ -110,7 +110,6 @@ fun CartScreen(
                     }
                 }
             } else {
-                // 🛒 Lista de productos en el carrito
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)

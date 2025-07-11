@@ -166,7 +166,6 @@ fun HomeScreen(
                 onAddToCart = { product, quantity ->
                     cartViewModel.addCartItem(
                         CartItem(
-                            id = product.id,
                             name = product.name,
                             price = product.price,
                             imageUrl = product.url,

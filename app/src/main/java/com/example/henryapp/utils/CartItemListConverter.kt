@@ -29,7 +29,7 @@ class CartItemListConverter {
         for (i in 0 until jsonArray.length()) {
             val jsonObject = jsonArray.getJSONObject(i)
             val cartItem = CartItem(
-                id = jsonObject.getString("id"),
+                id = jsonObject.getLong("id"),
                 name = jsonObject.getString("name"),
                 price = jsonObject.getDouble("price"),
                 imageUrl = jsonObject.getString("imageUrl"),

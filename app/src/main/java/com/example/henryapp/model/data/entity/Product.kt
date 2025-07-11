@@ -1,7 +1,7 @@
 package com.example.henryapp.model.data.entity
 
 data class Product(
-    val id: String,
+    val id: Long,
     val name: String,
     val url: String,
     val category: String,

@@ -44,7 +44,7 @@ fun CartItemCard(item: CartItem, onIncrease: () -> Unit, onDecrease: () -> Unit,
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Imagen del producto (simulada como Box por ahora)
+
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = item.name,
