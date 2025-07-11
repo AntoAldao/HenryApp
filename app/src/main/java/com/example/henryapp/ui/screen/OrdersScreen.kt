@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.henryapp.model.data.entity.Order
+import com.example.core.model.data.entity.Order
 import com.example.henryapp.navigation.BottomNavigationBar
 import com.example.henryapp.ui.componets.OrderCard
 import com.example.henryapp.viewmodel.OrderViewModel

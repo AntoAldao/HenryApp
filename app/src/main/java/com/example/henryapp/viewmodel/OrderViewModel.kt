@@ -1,10 +1,10 @@
 package com.example.henryapp.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.henryapp.model.data.entity.CartItem
-import com.example.henryapp.model.data.entity.Order
-import com.example.henryapp.repository.CartRepository
-import com.example.henryapp.repository.OrderRepository
+import com.example.core.model.data.entity.CartItem
+import com.example.core.model.data.entity.Order
+import com.example.core.model.repository.CartRepository
+import com.example.core.model.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject

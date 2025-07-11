@@ -5,8 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.henryapp.model.data.AppDatabase
-import com.example.henryapp.model.repository.LoginRepository
+import com.example.core.model.data.AppDatabase
+import com.example.core.model.repository.LoginRepository
 import kotlinx.coroutines.launch
 
 

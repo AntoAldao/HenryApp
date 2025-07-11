@@ -6,16 +6,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.henryapp.model.data.entity.User
-import com.example.henryapp.model.data.dao.UserDao
-import com.example.henryapp.utils.uploadImageToCloudinary
+import com.example.core.model.data.entity.User
+import com.example.core.model.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userDao: UserDao
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _user = mutableStateOf<User?>(null)
@@ -23,7 +22,7 @@ class ProfileViewModel @Inject constructor(
 
     fun loadUser(email: String) {
         viewModelScope.launch {
-            _user.value = userDao.getUserByEmail(email)
+            _user.value = userRepository.getUserByEmail(email)
         }
     }
 
@@ -39,7 +38,8 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _user.value?.let { currentUser ->
                 if (imageUri != null) {
-                    uploadImageToCloudinary(context, imageUri,
+                    userRepository.uploadUserImage(
+                        context, imageUri,
                         onSuccess = { url ->
                             val updatedUser = currentUser.copy(
                                 name = name,
@@ -48,7 +48,7 @@ class ProfileViewModel @Inject constructor(
                                 imageUrl = url
                             )
                             viewModelScope.launch {
-                                saveUpdatedUser(updatedUser, onSuccess, onError)
+                                saveUser(updatedUser, onSuccess, onError)
                             }
                         },
                         onError = { error ->
@@ -56,31 +56,30 @@ class ProfileViewModel @Inject constructor(
                         }
                     )
                 } else {
-                    // Si no hay imagen, actualiza solo los campos de texto
                     val updatedUser = currentUser.copy(
                         name = name,
                         lastName = lastName,
                         nationality = nationality
                     )
-                    saveUpdatedUser(updatedUser, onSuccess, onError)
+                    viewModelScope.launch {
+                        saveUser(updatedUser, onSuccess, onError)
+                    }
                 }
             } ?: onError("Usuario no encontrado")
         }
     }
 
-    private suspend fun saveUpdatedUser(
+    private suspend fun saveUser(
         updatedUser: User,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         try {
-            userDao.updateUser(updatedUser)
+            userRepository.updateUser(updatedUser)
             _user.value = updatedUser
             onSuccess()
         } catch (e: Exception) {
             onError("Error al guardar los cambios: ${e.message}")
         }
     }
-
-
 }

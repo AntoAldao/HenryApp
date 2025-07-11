@@ -2,7 +2,7 @@ package com.example.henryapp.viewmodel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.henryapp.model.data.entity.Product
+import com.example.core.model.data.entity.Product
 
 class HomeViewModel : ViewModel() {
     private val allProducts = listOf(

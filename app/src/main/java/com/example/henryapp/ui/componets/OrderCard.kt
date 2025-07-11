@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.henryapp.model.data.entity.Order
+import com.example.core.model.data.entity.Order
 import java.text.SimpleDateFormat
 import java.util.Locale
 

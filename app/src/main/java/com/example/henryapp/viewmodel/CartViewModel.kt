@@ -2,8 +2,8 @@ package com.example.henryapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.henryapp.model.data.entity.CartItem
-import com.example.henryapp.repository.CartRepository
+import com.example.core.model.data.entity.CartItem
+import com.example.core.model.repository.CartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

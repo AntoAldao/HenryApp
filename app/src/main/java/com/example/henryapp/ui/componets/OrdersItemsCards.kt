@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.henryapp.model.data.entity.CartItem
+import com.example.core.model.data.entity.CartItem
 
 @Composable
 fun OrdersItemsCards(item: CartItem) {

@@ -17,7 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.henryapp.model.data.entity.CartItem
+import com.example.core.model.data.entity.CartItem
 import com.example.henryapp.ui.componets.OrdersItemsCards
 import com.example.henryapp.viewmodel.OrderViewModel
 

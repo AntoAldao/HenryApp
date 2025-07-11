@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.henryapp.model.data.entity.CartItem
+import com.example.core.model.data.entity.CartItem
 import com.example.henryapp.navigation.BottomNavigationBar
 import com.example.henryapp.ui.componets.ProductList
 import com.example.henryapp.ui.theme.golden

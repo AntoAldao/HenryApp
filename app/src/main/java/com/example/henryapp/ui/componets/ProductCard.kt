@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.henryapp.model.data.entity.Product
+import com.example.core.model.data.entity.Product
 import com.example.henryapp.ui.theme.golden
 
 @Composable
