@@ -8,7 +8,7 @@ import javax.inject.Inject
 class OrderRepository @Inject constructor(
     private val orderDao: OrderDao,
 ) {
-    val orders: Flow<List<Order>> = orderDao.getAllOrders()
+    fun orders(): Flow<List<Order>> = orderDao.getAllOrders()
 
     suspend fun addOrder(order: Order): Long {
         return orderDao.insertOrder(order)
