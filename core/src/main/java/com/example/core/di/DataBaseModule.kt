@@ -5,9 +5,6 @@ import androidx.room.Room
 import com.example.core.model.data.AppDatabase
 import com.example.core.model.data.dao.CartItemDao
 import com.example.core.model.data.dao.OrderDao
-import com.example.core.model.data.migrations.MIGRATION_1_2
-import com.example.core.model.data.migrations.MIGRATION_2_3
-import com.example.core.model.data.migrations.MIGRATION_3_4
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,8 +24,8 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "henry_app_database"
-        )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+        ).build()
+//            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
     }
 
     @Provides

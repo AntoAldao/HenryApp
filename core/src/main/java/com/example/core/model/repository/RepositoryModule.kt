@@ -2,8 +2,8 @@ package com.example.core.model.repository
 
 import com.example.core.model.data.AppDatabase
 import com.example.core.model.data.dao.CartItemDao
-import com.example.core.model.data.dao.OrderDao
 import com.example.core.model.data.dao.UserDao
+import com.example.core.model.data.remote.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,14 +16,14 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideCartRepository(cartItemDao: CartItemDao): CartRepository {
-        return CartRepository(cartItemDao)
+    fun provideCartRepository(cartItemDao: CartItemDao, apiService: ApiService): CartRepository {
+        return CartRepository(cartItemDao, apiService)
     }
 
     @Provides
     @Singleton
-    fun provideOrderRepository(orderDao: OrderDao): OrderRepository {
-        return OrderRepository(orderDao)
+    fun provideOrderRepository(apiService: ApiService): OrderRepository {
+        return OrderRepository(apiService)
     }
 
     @Provides

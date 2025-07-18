@@ -34,7 +34,7 @@ class CartViewModelTest {
 
     @Test
     fun `addCartItem should call repository`() = runTest {
-        val item = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, orderId = 0)
+        val item = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, description = "Test Description", hasDrink = true)
 
         viewModel.addCartItem(item)
         advanceUntilIdle()
@@ -44,11 +44,11 @@ class CartViewModelTest {
 
     @Test
     fun `updateCartItem should call repository`() = runTest {
-        val item = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, orderId = 0)
+        val item = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, description = "Test Description", hasDrink = true)
 
         viewModel.addCartItem(item)
 
-        val itemUpdate = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, orderId = 1)
+        val itemUpdate = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, description = "Test Description", hasDrink = true)
 
         viewModel.updateCartItem(itemUpdate)
         advanceUntilIdle()

@@ -44,14 +44,12 @@ import com.example.henryapp.ui.componets.ProductList
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.viewmodel.CartViewModel
 import com.example.henryapp.viewmodel.HomeViewModel
-import com.example.henryapp.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel,
-    productViewModel: ProductViewModel,
     cartViewModel: CartViewModel = hiltViewModel(),
     email: String
 ) {
@@ -168,9 +166,10 @@ fun HomeScreen(
                         CartItem(
                             name = product.name,
                             price = product.price,
-                            imageUrl = product.url,
+                            imageUrl = product.imageUrl,
                             quantity = quantity,
-                            orderId = 0
+                            hasDrink = product.hasDrink,
+                            description = product.description ?: "",
                         )
                     )
                 },

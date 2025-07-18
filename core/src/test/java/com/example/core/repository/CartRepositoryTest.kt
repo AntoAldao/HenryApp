@@ -2,6 +2,7 @@ package com.example.core.repository
 
 import com.example.core.model.data.dao.CartItemDao
 import com.example.core.model.data.entity.CartItem
+import com.example.core.model.data.remote.ApiService
 import com.example.core.model.repository.CartRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -15,12 +16,14 @@ import org.mockito.Mockito.verify
 class CartRepositoryTest {
 
     private lateinit var cartItemDao: CartItemDao
+    private lateinit var apiService: ApiService
     private lateinit var cartRepository: CartRepository
 
     @Before
     fun setup() {
         cartItemDao = mock(CartItemDao::class.java)
-        cartRepository = CartRepository(cartItemDao)
+        apiService = mock(ApiService::class.java)
+        cartRepository = CartRepository(cartItemDao, apiService)
     }
 
     @Test
@@ -31,7 +34,8 @@ class CartRepositoryTest {
             price = 10.0,
             imageUrl = "http://example.com/image.jpg",
             quantity = 2,
-            orderId = 101
+            hasDrink = true,
+            description = "Test Description",
         )
         cartRepository.addCartItem(item)
         advanceUntilIdle()
@@ -46,7 +50,8 @@ class CartRepositoryTest {
             price = 10.0,
             imageUrl = "http://example.com/image.jpg",
             quantity = 3,
-            orderId = 101
+            hasDrink = true,
+            description = "Test Description",
         )
         cartRepository.updateCartItem(item)
         advanceUntilIdle()
@@ -61,7 +66,8 @@ class CartRepositoryTest {
             price = 10.0,
             imageUrl = "http://example.com/image.jpg",
             quantity = 1,
-            orderId = 101
+            hasDrink = true,
+            description = "Test Description",
         )
         cartRepository.removeCartItem(item)
         advanceUntilIdle()
@@ -76,10 +82,10 @@ class CartRepositoryTest {
     }
 
     @Test
-    fun `getCartItems calls getCartItemsByOrderId on dao`() {
-        val orderId = 123L
-        cartRepository.getCartItems(orderId)
-
-        verify(cartItemDao).getCartItemsByOrderId(orderId)
+    fun `getCartItems calls getOrderDetail on apiService`() = runTest {
+        val orderId = "123"
+        val email = "test@email.com"
+        cartRepository.getCartItems(orderId, email)
+        verify(apiService).getOrderDetail(email,orderId, )
     }
 }

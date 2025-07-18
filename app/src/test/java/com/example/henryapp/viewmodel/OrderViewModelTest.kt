@@ -2,18 +2,17 @@ package com.example.henryapp.viewmodel
 
 import com.example.core.model.data.entity.CartItem
 import com.example.core.model.data.entity.Order
+import com.example.core.model.data.entity.OrderResponse
 import com.example.core.model.repository.CartRepository
 import com.example.core.model.repository.OrderRepository
 import com.example.henryapp.utils.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -26,45 +25,38 @@ class OrderViewModelTest {
     private lateinit var repository: OrderRepository
     private lateinit var viewModel: OrderViewModel
     private lateinit var cartRepository: CartRepository
-    private lateinit var cartViewModel: CartViewModel
-
-    private val mockOrderFlow = MutableStateFlow<List<Order>>(emptyList())
 
     @Before
     fun setup() {
         repository = mock(OrderRepository::class.java)
         cartRepository = mock(CartRepository::class.java)
-        whenever(repository.orders).thenReturn(mockOrderFlow)
-        whenever(repository.getOrdersByEmail(any())).thenReturn(mockOrderFlow)
-        whenever(cartRepository.getCartItems(any())).thenReturn(MutableStateFlow(emptyList<CartItem>()))
         viewModel = OrderViewModel(repository, cartRepository)
-        cartViewModel = CartViewModel(cartRepository)
     }
 
     @Test
     fun `addOrder should call repository`() = runTest {
         val total = 150.00
         val email = "emailTest"
+        val cartItems = listOf<CartItem>()
         val order = Order(
             total = total,
             date = System.currentTimeMillis(),
-            email = email
+            email = email,
+            productIds = cartItems
         )
+        whenever(repository.addOrder(order)).thenReturn(order)
 
-        viewModel.addOrder(total, email)
+        viewModel.addOrder(order)
         advanceUntilIdle()
 
         verify(repository).addOrder(order)
     }
 
     @Test
-    fun `getOrders by email`() = runTest {
-
-        val total = 150.00
+    fun `getOrdersByEmail should call repository`() = runTest {
         val email = "emailTest"
-
-        viewModel.addOrder(total, email)
-        advanceUntilIdle()
+        val response = listOf<OrderResponse>()
+        whenever(repository.getOrdersByEmail(email)).thenReturn(response)
 
         viewModel.getOrdersByEmail(email)
         advanceUntilIdle()
@@ -73,16 +65,15 @@ class OrderViewModelTest {
     }
 
     @Test
-    fun `getCardItems should call repository`() = runTest {
-        val orderId = 1L
+    fun `getCardItems should call cartRepository`() = runTest {
+        val orderId = "1"
+        val email = "emailTest"
+        val cartItems = listOf<CartItem>()
+        whenever(cartRepository.getCartItems(orderId, email)).thenReturn(cartItems)
 
-        val item = CartItem(id = 1, name = "Test Item", price = 10.0, imageUrl = "url", quantity = 1, orderId = orderId)
-
-        cartViewModel.addCartItem(item)
-
-        viewModel.getCardItems(orderId)
+        viewModel.getCardItems(orderId, email)
         advanceUntilIdle()
 
-        verify(cartRepository).getCartItems(orderId)
+        verify(cartRepository).getCartItems(orderId, email)
     }
 }

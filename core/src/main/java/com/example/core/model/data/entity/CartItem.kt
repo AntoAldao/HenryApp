@@ -10,6 +10,6 @@ data class CartItem(
     val price: Double,
     val imageUrl: String,
     var quantity: Int,
-    var orderId: Long,
-    //val category: String
+    val hasDrink: Boolean,
+    val description: String
 )

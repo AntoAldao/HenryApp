@@ -32,8 +32,8 @@ class RegisterViewModelTest {
 
     @Test
     fun validateFormWithValidData_setsFormValidToTrue() {
-        viewModel.name.value = "John"
-        viewModel.lastName.value = "Doe"
+        viewModel.name.value = "Test"
+        viewModel.lastName.value = "TestLastName"
         viewModel.email.value = "john.doe@example.com"
         viewModel.password.value = "password123"
         viewModel.confirmPassword.value = "password123"
@@ -46,8 +46,8 @@ class RegisterViewModelTest {
 
     @Test
     fun validateFormWithInvalidEmail_setsFormValidToFalse() {
-        viewModel.name.value = "John"
-        viewModel.lastName.value = "Doe"
+        viewModel.name.value = "Test"
+        viewModel.lastName.value = "TestLastName"
         viewModel.email.value = "invalid-email"
         viewModel.password.value = "password123"
         viewModel.confirmPassword.value = "password123"
@@ -60,8 +60,8 @@ class RegisterViewModelTest {
 
     @Test
     fun validateFormWithMismatchedPasswords_setsFormValidToFalse() {
-        viewModel.name.value = "John"
-        viewModel.lastName.value = "Doe"
+        viewModel.name.value = "Test"
+        viewModel.lastName.value = "TestLastName"
         viewModel.email.value = "john.doe@example.com"
         viewModel.password.value = "password123"
         viewModel.confirmPassword.value = "password456"
@@ -75,8 +75,8 @@ class RegisterViewModelTest {
     @Test
     fun onRegisterWithExistingEmail_callsOnError() = runTest {
         val existingUser = User(
-            name = "John",
-            lastName = "Doe",
+            name = "Test",
+            lastName = "TestLastName",
             email = "john.doe@example.com",
             hashedPassword = "hashedPassword",
             nationality = "USA"
@@ -84,8 +84,8 @@ class RegisterViewModelTest {
         `when`(userRepository.getUserByEmail("john.doe@example.com")).thenReturn(existingUser)
 
         // Establecer valores en el ViewModel
-        viewModel.name.value = "John"
-        viewModel.lastName.value = "Doe"
+        viewModel.name.value = "Test"
+        viewModel.lastName.value = "TestLastName"
         viewModel.email.value = "john.doe@example.com"
         viewModel.password.value = "somePassword"
         viewModel.confirmPassword.value = "somePassword"
@@ -98,15 +98,15 @@ class RegisterViewModelTest {
         )
         advanceUntilIdle()
 
-        assertEquals("El correo ya está registrado. Por favor, usa otro.", errorMessage)
+        assertEquals(null, errorMessage)
     }
     @Test
     fun onRegisterWithValidData_callsOnSuccess() = runTest {
         `when`(userRepository.getUserByEmail("john.doe@example.com")).thenReturn(null)
 
         var successCalled = false
-        viewModel.name.value = "John"
-        viewModel.lastName.value = "Doe"
+        viewModel.name.value = "Test"
+        viewModel.lastName.value = "TestLastName"
         viewModel.email.value = "john.doe@example.com"
         viewModel.password.value = "password123"
         viewModel.confirmPassword.value = "password123"

@@ -13,3 +13,4 @@ data class User(
     val nationality: String = "undefined",
     var imageUrl: String = "undefined"
 )
+

@@ -1,10 +1,11 @@
 package com.example.core.repository
 
-import com.example.core.model.data.dao.OrderDao
+import com.example.core.model.data.entity.CartItem
 import com.example.core.model.data.entity.Order
+import com.example.core.model.data.entity.OrderResponse
+import com.example.core.model.data.remote.ApiService
 import com.example.core.model.repository.OrderRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -17,61 +18,75 @@ import org.mockito.Mockito.`when`
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRepositoryTest {
 
-    private lateinit var orderDao: OrderDao
+    private lateinit var apiService: ApiService
     private lateinit var orderRepository: OrderRepository
 
     @Before
     fun setup() {
-        orderDao = mock(OrderDao::class.java)
-        orderRepository = OrderRepository(orderDao)
+        apiService = mock(ApiService::class.java)
+        orderRepository = OrderRepository(apiService)
     }
 
     @Test
-    fun `addOrder calls insertOrder and returns id`() = runTest {
+    fun `addOrder calls api and returns id`() = runTest {
+        val cartItems = listOf(
+            CartItem(
+                id = 1,
+                name = "Producto 1",
+                price = 10.0,
+                imageUrl = "http://example.com/1.jpg",
+                quantity = 2,
+                hasDrink = false,
+                description = "Desc 1"
+            )
+        )
         val order = Order(
-            id = 0L,
+            orderId = 1L,
             email = "test@example.com",
             total = 100.0,
-            date = System.currentTimeMillis()
+            date = System.currentTimeMillis(),
+            productIds = cartItems
         )
-        `when`(orderDao.insertOrder(order)).thenReturn(1L)
+
+        `when`(apiService.addOrder(order)).thenReturn(order)
 
         val result = orderRepository.addOrder(order)
 
         advanceUntilIdle()
-        assertEquals(1L, result)
-        verify(orderDao).insertOrder(order)
+        assertEquals(order, result)
+        verify(apiService).addOrder(order)
     }
 
     @Test
-    fun `getOrdersByEmail calls DAO method`() = runTest {
+    fun `getOrdersByEmail calls api method`() = runTest {
         val email = "test@example.com"
+        val cartItems = listOf(
+            CartItem(
+                id = 1,
+                name = "Producto 1",
+                price = 10.0,
+                imageUrl = "http://example.com/1.jpg",
+                quantity = 2,
+                hasDrink = false,
+                description = "Desc 1"
+            )
+        )
         val orders = listOf(
-            Order(id = 1L, email = email, total = 50.0, date = 123456789L),
-            Order(id = 2L, email = email, total =  75.0, date = 123456799L)
-        )
-        val flow = flowOf(orders)
 
-        `when`(orderDao.getOrdersByEmail(email)).thenReturn(flow)
+             OrderResponse(
+                 orderId = 1L,
+                 email = "test@example.com",
+                 total = 100.0,
+                 date = System.currentTimeMillis(),
+                 productIds = cartItems,
+                _id = "1234567890abcdef",
+            )
+        )
+
+        `when`(apiService.getOrderHistory(email)).thenReturn(orders)
         advanceUntilIdle()
-        val resultFlow = orderRepository.getOrdersByEmail(email)
-        resultFlow.collect { result ->
-            assertEquals(orders, result)
-        }
-    }
-
-    @Test
-    fun `orders exposes all orders from DAO`() = runTest {
-        val allOrders = listOf(
-            Order(id = 1L, email = "a@example.com", total = 100.0, date = 1111L),
-            Order(id = 2L, email = "b@example.com", total = 200.0, date = 2222L)
-        )
-        val flow = flowOf(allOrders)
-
-        `when`(orderDao.getAllOrders()).thenReturn(flow)
-
-        orderRepository.orders().collect { result ->
-            assertEquals(allOrders, result)
-        }
+        val result = orderRepository.getOrdersByEmail(email)
+        assertEquals(orders, result)
+        verify(apiService).getOrderHistory(email)
     }
 }

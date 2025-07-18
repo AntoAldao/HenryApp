@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.core.model.data.entity.Order
 import com.example.henryapp.ui.componets.CartItemCard
 import com.example.henryapp.viewmodel.CartViewModel
 import com.example.henryapp.viewmodel.OrderViewModel
@@ -153,10 +154,17 @@ fun CartScreen(
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            val orderId = orderViewModel.addOrder(total, email)
-                            cartItems.forEach { item ->
-                                viewModel.updateCartItem(item.copy(orderId = orderId))
-                            }
+                            val order = Order(
+                                total = total,
+                                date = System.currentTimeMillis(),
+                                email = email,
+                                productIds = cartItems
+                            )
+                            orderViewModel.addOrder(order)
+                            viewModel.clearCart()
+//                            cartItems.forEach { item ->
+//                                viewModel.updateCartItem(item.copy(orderId = orderId))
+//                            }
                             navController.navigate("orders/$email")
                         }
                     },

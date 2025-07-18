@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.core.model.data.entity.Order
+import com.example.core.model.data.entity.OrderResponse
 import com.example.henryapp.navigation.BottomNavigationBar
 import com.example.henryapp.ui.componets.OrderCard
 import com.example.henryapp.viewmodel.OrderViewModel
@@ -27,7 +27,7 @@ fun OrdersScreen(
     viewModel: OrderViewModel = hiltViewModel(),
     email: String
 ) {
-    val orders = remember { mutableStateOf(emptyList<Order>()) }
+    val orders = remember { mutableStateOf(emptyList<OrderResponse>()) }
     LaunchedEffect(email) {
         orders.value = viewModel.getOrdersByEmail(email)
     }

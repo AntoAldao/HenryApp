@@ -47,14 +47,9 @@ class RegisterViewModel @Inject constructor(
     fun onRegister(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
+                println("aca estamos")
 
-                val existingUser = userRepository.getUserByEmail(email.value)
-                if (existingUser != null) {
-                    val message = "El correo ya está registrado. Por favor, usa otro."
-                    errorMessage.value = message
-                    onError(message)
-                    return@launch
-                }
+                println("hasta aca no hay error")
 
                 val hashedPassword = HashPassword.hashPassword(password.value)
                 val user = User(
@@ -64,13 +59,19 @@ class RegisterViewModel @Inject constructor(
                     hashedPassword = hashedPassword,
                     nationality = nationality.value
                 )
+
+                println(user)
+
                 userRepository.addUser(user)
                 onSuccess()
+
             } catch (e: Exception) {
+                println("Error al registrar usuario: ${e.message}")
                 errorMessage.value = e.message ?: "Error al registrarse"
                 onError(errorMessage.value!!)
             }
         }
     }
+
 }
 

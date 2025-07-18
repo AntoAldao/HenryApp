@@ -3,10 +3,10 @@ package com.example.henryapp.viewmodel
 import androidx.lifecycle.ViewModel
 import com.example.core.model.data.entity.CartItem
 import com.example.core.model.data.entity.Order
+import com.example.core.model.data.entity.OrderResponse
 import com.example.core.model.repository.CartRepository
 import com.example.core.model.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,20 +15,21 @@ class OrderViewModel @Inject constructor(
     private val itemRepository: CartRepository,
 ) : ViewModel() {
 
-    suspend fun addOrder(total: Double, email: String): Long {
-        val order = Order(
-            total = total,
-            date = System.currentTimeMillis(),
-            email = email
-        )
-        return repository.addOrder(order)
+    suspend fun addOrder(order: Order): Order {
+      try {
+          return repository.addOrder(order)
+      }catch (e: Exception) {
+
+          throw RuntimeException("Error adding order: ${e.message}", e)
+      }
+
     }
 
-    suspend fun getOrdersByEmail(email: String): List<Order> {
-        return repository.getOrdersByEmail(email).first()
+    suspend fun getOrdersByEmail(email: String): List<OrderResponse> {
+        return repository.getOrdersByEmail(email)
     }
 
-    suspend fun getCardItems(orderId: Long): List<CartItem> {
-        return itemRepository.getCartItems(orderId).first()
+    suspend fun getCardItems(orderId: String, email: String): List<CartItem> {
+        return itemRepository.getCartItems(orderId, email)
     }
 }

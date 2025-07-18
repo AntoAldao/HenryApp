@@ -113,7 +113,11 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.okhttp)
     implementation(project(":core"))
-    kapt(libs.hilt.android.compiler) // Kapt para Hilt
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.converter.gson)
+    implementation (libs.jetbrains.kotlinx.coroutines.android)
+    kapt(libs.hilt.android.compiler)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     implementation(libs.mockito.core)

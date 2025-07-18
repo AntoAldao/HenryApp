@@ -20,13 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.core.model.data.entity.Order
+import com.example.core.model.data.entity.OrderResponse
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun OrderCard(
-    order: Order,
+    order: OrderResponse,
     navController: NavController,
     email: String
 ) {
@@ -36,7 +36,7 @@ fun OrderCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { navController.navigate("orderDetail/${email}/${order.id}") },
+            .clickable { navController.navigate("orderDetail/${email}/${order._id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -52,7 +52,7 @@ fun OrderCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Pedido #${order.id}",
+                    text = "Pedido #${order._id.take(8)}",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(

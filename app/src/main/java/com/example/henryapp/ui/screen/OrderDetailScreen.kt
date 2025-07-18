@@ -25,18 +25,18 @@ import com.example.henryapp.viewmodel.OrderViewModel
 @Composable
 fun OrderDetailScreen(
     navController: NavController,
-    orderId: Long,
+    orderId: String,
     viewModel: OrderViewModel,
     email: String
 ) {
 
-    println("orderId : $orderId")
-
     val cartItems = remember { mutableStateOf(emptyList<CartItem>()) }
 
     LaunchedEffect(orderId) {
-        cartItems.value = viewModel.getCardItems(orderId)
+        cartItems.value = viewModel.getCardItems(orderId, email)
     }
+
+    println(cartItems.value)
 
     Scaffold(
         topBar = {

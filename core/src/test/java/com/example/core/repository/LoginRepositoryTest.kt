@@ -1,7 +1,9 @@
 package com.example.core.repository
 
-import com.example.core.model.data.dao.UserDao
+import com.example.core.model.data.entity.Credentials
+import com.example.core.model.data.entity.LoginResponse
 import com.example.core.model.data.entity.User
+import com.example.core.model.data.remote.ApiService
 import com.example.core.model.repository.LoginRepository
 import com.example.core.utils.HashPassword
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,13 +18,13 @@ import org.mockito.Mockito.`when`
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginRepositoryTest {
 
-    private lateinit var userDao: UserDao
+    private lateinit var apiService: ApiService
     private lateinit var loginRepository: LoginRepository
 
     @Before
     fun setup() {
-        userDao = mock(UserDao::class.java)
-        loginRepository = LoginRepository(userDao)
+        apiService = mock(ApiService::class.java)
+        loginRepository = LoginRepository(apiService)
     }
 
     @Test
@@ -30,17 +32,24 @@ class LoginRepositoryTest {
         val email = "test@example.com"
         val password = "password123"
         val hashedPassword = HashPassword.hashPassword(password)
-        val user = User(
-            id = 1,
-            name = "Test",
-            lastName = "User",
-            email = email,
-            hashedPassword = hashedPassword,
-            nationality = "Testland",
-            imageUrl = "http://example.com/image.jpg"
+        val user = LoginResponse(
+            message = "Login exitoso",
+            user = User(
+                id = 1,
+                name = "Test",
+                lastName = "User",
+                email = email,
+                hashedPassword = hashedPassword,
+                nationality = "Testland",
+                imageUrl = "http://example.com/image.jpg"
+            )
         )
 
-        `when`(userDao.getUserByEmail(email)).thenReturn(user)
+        val credentials = Credentials(
+            email = email,
+            hashedPassword= hashedPassword
+        )
+        `when`(apiService.login(credentials)).thenReturn(user)
 
         val result = loginRepository.login(email, password)
 
@@ -49,10 +58,16 @@ class LoginRepositoryTest {
 
     @Test
     fun `login returns false when user does not exist`() = runTest {
-        val email = "nonexistent@example.com"
-        `when`(userDao.getUserByEmail(email)).thenReturn(null)
+        val email = "test@example.com"
+        val password = "password123"
+        val credentials = Credentials(
+            email = email,
+            hashedPassword = password
+        )
 
-        val result = loginRepository.login(email, "anyPassword")
+        `when`(apiService.login(credentials)).thenReturn(null)
+
+        val result = loginRepository.login(email, password)
 
         assertFalse(result)
     }
@@ -60,21 +75,15 @@ class LoginRepositoryTest {
     @Test
     fun `login returns false when password is incorrect`() = runTest {
         val email = "test@example.com"
-        val correctPassword = "password123"
-        val wrongPassword = "wrongpassword"
-        val user = User(
-            id = 1,
-            name = "Test",
-            lastName = "User",
+        val password = "password123"
+        val credentials = Credentials(
             email = email,
-            hashedPassword = HashPassword.hashPassword(correctPassword),
-            nationality = "Testland",
-            imageUrl = "http://example.com/image.jpg"
+            hashedPassword = password
         )
 
-        `when`(userDao.getUserByEmail(email)).thenReturn(user)
+        `when`(apiService.login(credentials)).thenReturn(null)
 
-        val result = loginRepository.login(email, wrongPassword)
+        val result = loginRepository.login(email, password)
 
         assertFalse(result)
     }

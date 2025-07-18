@@ -2,7 +2,6 @@ package com.example.henryapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,7 +16,6 @@ import com.example.henryapp.viewmodel.CartViewModel
 import com.example.henryapp.viewmodel.HomeViewModel
 import com.example.henryapp.viewmodel.LoginViewModel
 import com.example.henryapp.viewmodel.OrderViewModel
-import com.example.henryapp.viewmodel.ProductViewModel
 import com.example.henryapp.viewmodel.ProfileViewModel
 import com.example.henryapp.viewmodel.RegisterViewModel
 
@@ -27,7 +25,7 @@ fun MainApp() {
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
-            val loginViewModel: LoginViewModel = viewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
 
             LoginScreen(
                 viewModel = loginViewModel,
@@ -42,10 +40,9 @@ fun MainApp() {
         }
         composable("home/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
-            val homeViewModel: HomeViewModel = viewModel()
-            val productViewModel: ProductViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             val cartViewModel: CartViewModel = hiltViewModel()
-            HomeScreen(navController, homeViewModel, productViewModel, cartViewModel, email)
+            HomeScreen(navController, homeViewModel, cartViewModel, email)
         }
         composable("orders/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
@@ -83,7 +80,7 @@ fun MainApp() {
         }
         composable("orderDetail/{email}/{orderId}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
-            val orderId = backStackEntry.arguments?.getString("orderId")?.toLong() ?: 0L
+            val orderId = backStackEntry.arguments?.getString("orderId")?: ""
             val orderViewModel: OrderViewModel = hiltViewModel()
             OrderDetailScreen(navController, orderId, orderViewModel, email)
         }

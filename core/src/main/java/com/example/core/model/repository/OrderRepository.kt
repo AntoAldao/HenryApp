@@ -1,22 +1,20 @@
 package com.example.core.model.repository
 
-import com.example.core.model.data.dao.OrderDao
 import com.example.core.model.data.entity.Order
-import kotlinx.coroutines.flow.Flow
+import com.example.core.model.data.entity.OrderResponse
+import com.example.core.model.data.remote.ApiService
 import javax.inject.Inject
 
 class OrderRepository @Inject constructor(
-    private val orderDao: OrderDao,
+    private val apiService: ApiService
 ) {
-    fun orders(): Flow<List<Order>> = orderDao.getAllOrders()
 
-    suspend fun addOrder(order: Order): Long {
-        return orderDao.insertOrder(order)
-
+    suspend fun addOrder(order: Order): Order {
+        return apiService.addOrder(order)
     }
 
-    fun getOrdersByEmail(email: String): Flow<List<Order>> {
-        return orderDao.getOrdersByEmail(email)
+    suspend fun getOrdersByEmail(email: String): List<OrderResponse> {
+        return apiService.getOrderHistory(email)
     }
 
 }
