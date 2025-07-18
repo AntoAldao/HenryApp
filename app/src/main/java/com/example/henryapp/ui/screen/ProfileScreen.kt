@@ -32,6 +32,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,11 +62,22 @@ fun ProfileScreen(
     onLogout: () -> Unit
 ) {
     val context = LocalContext.current
-    LaunchedEffect(userEmail) { viewModel.loadUser(userEmail) }
     val user by viewModel.user
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Cargar datos del usuario
+    LaunchedEffect(userEmail) {
+        viewModel.loadUser(userEmail)
+    }
+
+    // Mostrar errores emitidos por el ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.errorEvents.collect { errorMsg ->
+            snackbarHostState.showSnackbar(errorMsg)
+        }
+    }
 
     var isEditing by remember { mutableStateOf(false) }
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     var showSuccessMessage by remember { mutableStateOf(false) }
 
     var name by remember { mutableStateOf("") }
@@ -88,10 +101,8 @@ fun ProfileScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri -> imageUri = uri }
 
-    Scaffold (
-        snackbarHost = {
-            androidx.compose.material3.SnackbarHost(hostState = snackbarHostState)
-        }
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -105,7 +116,6 @@ fun ProfileScreen(
                     .height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                //boton para volver al home <-
                 OutlinedButton(
                     onClick = { navController.navigate("home/$userEmail") },
                     modifier = Modifier
@@ -124,9 +134,7 @@ fun ProfileScreen(
                     )
                 }
 
-
                 Card(
-//                shape = CircleShape,
                     modifier = Modifier.size(120.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
@@ -158,10 +166,7 @@ fun ProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-                    )
+                    .background(Color.White, shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .padding(16.dp)
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -236,7 +241,6 @@ fun ProfileScreen(
                         borderColor = Color.Black
                     )
 
-
                     if (isEditing) {
                         Spacer(modifier = Modifier.height(130.dp))
                         Row(
@@ -255,7 +259,7 @@ fun ProfileScreen(
                                             isEditing = false
                                             showSuccessMessage = true
                                         },
-                                        onError = { println("Error: $it") }
+                                        onError = {}
                                     )
                                 },
                                 modifier = Modifier.requiredHeight(50.dp),
@@ -292,7 +296,6 @@ fun ProfileScreen(
                             }
                         }
                     } else {
-
                         Spacer(modifier = Modifier.height(190.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -316,8 +319,7 @@ fun ProfileScreen(
                             }
                             OutlinedButton(
                                 onClick = { onLogout() },
-                                modifier = Modifier
-                                    .requiredHeight(50.dp),
+                                modifier = Modifier.requiredHeight(50.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.White,
                                     containerColor = Color.Transparent

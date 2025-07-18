@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -38,12 +41,21 @@ import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.ui.theme.goldenTransparent
 import com.example.henryapp.viewmodel.LoginViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val loginState by viewModel.loginResult.observeAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.errorEvents.collectLatest { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -64,7 +76,6 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // App name
             Text(
                 text = "Henry Food",
                 fontSize = 38.sp,
@@ -75,7 +86,6 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Email
             CustomOutlinedTextField(
                 value = email.value,
                 onValueChange = { email.value = it },
@@ -84,7 +94,6 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password
             CustomOutlinedTextField(
                 value = password.value,
                 onValueChange = { password.value = it },
@@ -94,17 +103,15 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Login button
             Button(
                 onClick = { viewModel.login(email.value, password.value) },
                 modifier = Modifier
                     .requiredHeight(40.dp)
-                    .align(Alignment.CenterHorizontally) ,
+                    .align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
                     containerColor = Color.Black,
                     disabledContainerColor = Color.LightGray
-
                 ),
                 enabled = email.value.isNotBlank() && password.value.isNotBlank(),
             ) {
@@ -113,16 +120,9 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
 
             if (loginState == true) {
                 onLoginSuccess()
-            } else if (loginState == false) {
-                Text(
-                    text = "Login fallido, por favor intenta de nuevo.",
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
             }
 
             Spacer(modifier = Modifier.height(35.dp))
-
 
             Text(
                 buildAnnotatedString {
@@ -142,7 +142,6 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
             )
         }
 
-
         Image(
             painter = painterResource(id = R.drawable.hamburgesa),
             contentDescription = "Decoración",
@@ -150,6 +149,11 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
                 .align(Alignment.BottomStart)
                 .height(300.dp)
                 .offset(x = (-60).dp)
+        )
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }

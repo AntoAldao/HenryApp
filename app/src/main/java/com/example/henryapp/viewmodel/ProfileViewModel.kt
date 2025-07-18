@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.model.data.entity.User
 import com.example.core.model.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,9 +22,16 @@ class ProfileViewModel @Inject constructor(
     private val _user = mutableStateOf<User?>(null)
     val user: State<User?> get() = _user
 
+    private val _errorEvents = MutableSharedFlow<String>()
+    val errorEvents = _errorEvents.asSharedFlow()
+
     fun loadUser(email: String) {
         viewModelScope.launch {
-            _user.value = userRepository.getUserByEmail(email)
+            try {
+                _user.value = userRepository.getUserByEmail(email)
+            } catch (e: Exception) {
+                _errorEvents.emit("Error al cargar el usuario")
+            }
         }
     }
 
@@ -36,36 +45,47 @@ class ProfileViewModel @Inject constructor(
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            _user.value?.let { currentUser ->
-                if (imageUri != null) {
+            val currentUser = _user.value
+            if (currentUser == null) {
+                onError("Usuario no encontrado")
+                return@launch
+            }
+
+            try {
+                val updatedUser = if (imageUri != null) {
                     userRepository.uploadUserImage(
-                        context, imageUri,
-                        onSuccess = { url ->
-                            val updatedUser = currentUser.copy(
+                        context,
+                        imageUri,
+                        onSuccess = { imageUrl ->
+                            val userWithImage = currentUser.copy(
                                 name = name,
                                 lastName = lastName,
                                 nationality = nationality,
-                                imageUrl = url
+                                imageUrl = imageUrl
                             )
                             viewModelScope.launch {
-                                saveUser(updatedUser, onSuccess, onError)
+                                saveUser(userWithImage, onSuccess, onError)
                             }
                         },
-                        onError = { error ->
-                            onError("Error al subir la imagen: $error")
+                        onError = { uploadError ->
+                            onError("Error al subir la imagen: $uploadError")
                         }
                     )
+                    return@launch
                 } else {
-                    val updatedUser = currentUser.copy(
+                    currentUser.copy(
                         name = name,
                         lastName = lastName,
                         nationality = nationality
                     )
-                    viewModelScope.launch {
-                        saveUser(updatedUser, onSuccess, onError)
-                    }
                 }
-            } ?: onError("Usuario no encontrado")
+
+                saveUser(updatedUser, onSuccess, onError)
+
+
+            } catch (e: Exception) {
+                onError("Error al actualizar perfil: ${e.message}")
+            }
         }
     }
 

@@ -71,11 +71,14 @@ fun MainApp() {
 
             RegisterScreen(viewModel = registerViewModel,
                 onRegisterSuccess = {
-                    val email = registerViewModel.email.value // Retrieve email from ViewModel
+                    val email = registerViewModel.email.value
                     navController.navigate("home/$email") {
                         popUpTo("register") { inclusive = true }
                     }
-                }
+                },
+                onRegisterError = { errorMessage ->
+                    println("Registration error: $errorMessage")
+                },
             )
         }
         composable("orderDetail/{email}/{orderId}") { backStackEntry ->

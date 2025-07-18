@@ -1,10 +1,14 @@
 package com.example.henryapp.viewmodel
+
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.core.model.data.entity.Product
 import com.example.core.model.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,21 +22,22 @@ class HomeViewModel @Inject constructor(
 
     private var allProducts = listOf<Product>()
 
+    private val _errorEvents = MutableSharedFlow<String>()
+    val errorEvents = _errorEvents.asSharedFlow()
+
     init {
         loadProducts()
     }
 
     private fun loadProducts() {
-        // Ejecutar en una coroutine del ViewModel
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+        viewModelScope.launch {
             try {
-                val productList = productRepository.getProducts() // suspend fun
+                val productList = productRepository.getProducts()
                 allProducts = productList
                 products.clear()
                 products.addAll(productList)
             } catch (e: Exception) {
-                // Podés manejar errores de red acá si querés mostrar algo
-                e.printStackTrace()
+                _errorEvents.emit("Error al cargar productos: ${e.message}")
             }
         }
     }
@@ -47,4 +52,3 @@ class HomeViewModel @Inject constructor(
         )
     }
 }
-

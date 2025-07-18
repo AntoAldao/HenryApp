@@ -38,7 +38,7 @@ import com.example.henryapp.viewmodel.RegisterViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuccess: () -> Unit) {
+fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuccess: () -> Unit, onRegisterError: (errorMessage:String) -> Unit) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -77,10 +77,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
             )
             .padding(horizontal = 16.dp),
     ) {
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+
 
         Column(
             modifier = Modifier
@@ -184,10 +181,9 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                             onRegisterSuccess()
                         },
                         onError = { errorMessage ->
-                            //TODO agregar manejo de errores
+                            onRegisterError(errorMessage)
                         }
                     )
-                    onRegisterSuccess()
                 },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
@@ -209,6 +205,10 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 .align(Alignment.BottomStart)
                 .height(300.dp) // ajustalo según el tamaño que quieras
                 .offset(x= -60.dp) // ajusta el desplazamiento según sea necesario
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
