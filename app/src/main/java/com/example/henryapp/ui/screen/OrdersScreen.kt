@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.OrderResponse
 import com.example.henryapp.navigation.BottomNavigationBar
+import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.OrderCard
 import com.example.henryapp.viewmodel.OrderViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -48,13 +49,17 @@ fun OrdersScreen(
         bottomBar = { BottomNavigationBar(navController, email) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-            items(orders.value) { order ->
-                OrderCard(order, navController, email)
+        if (viewModel.isLoading.value) {
+            LoadingIndicator()
+        }else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                items(orders.value) { order ->
+                    OrderCard(order, navController, email)
+                }
             }
         }
     }

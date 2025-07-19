@@ -25,12 +25,19 @@ class ProfileViewModel @Inject constructor(
     private val _errorEvents = MutableSharedFlow<String>()
     val errorEvents = _errorEvents.asSharedFlow()
 
+    private val _isLoading = mutableStateOf(true)
+    val isLoading: State<Boolean> = _isLoading
+
     fun loadUser(email: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 _user.value = userRepository.getUserByEmail(email)
             } catch (e: Exception) {
                 _errorEvents.emit("Error al cargar el usuario")
+            }
+            finally {
+                _isLoading.value = false
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.example.henryapp.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.model.data.entity.CartItem
@@ -22,6 +24,9 @@ class OrderViewModel @Inject constructor(
     private val _errorEvents = MutableSharedFlow<String>()
     val errorEvents = _errorEvents.asSharedFlow()
 
+    private val _isLoading = mutableStateOf(true)
+    val isLoading: State<Boolean> = _isLoading
+
     suspend fun addOrder(order: Order): Order {
         return try {
             repository.addOrder(order)
@@ -34,6 +39,7 @@ class OrderViewModel @Inject constructor(
     }
 
     suspend fun getOrdersByEmail(email: String): List<OrderResponse> {
+        _isLoading.value = true
         return try {
             repository.getOrdersByEmail(email)
         } catch (e: Exception) {
@@ -42,9 +48,13 @@ class OrderViewModel @Inject constructor(
             }
             emptyList()
         }
+        finally {
+            _isLoading.value = false
+        }
     }
 
     suspend fun getCardItems(orderId: String, email: String): List<CartItem> {
+        _isLoading.value = true
         return try {
             itemRepository.getCartItems(orderId, email)
         } catch (e: Exception) {
@@ -52,6 +62,9 @@ class OrderViewModel @Inject constructor(
                 _errorEvents.emit("Error al obtener los ítems del carrito: ${e.message}")
             }
             emptyList()
+        }
+        finally {
+            _isLoading.value = false
         }
     }
 }

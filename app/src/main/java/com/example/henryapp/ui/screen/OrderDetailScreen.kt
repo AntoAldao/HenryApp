@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.CartItem
+import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.OrdersItemsCards
 import com.example.henryapp.viewmodel.OrderViewModel
 
@@ -64,9 +65,13 @@ fun OrderDetailScreen(
             )
         }
     ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)) {
-            items(cartItems.value) { cartItem ->
-                OrdersItemsCards(cartItem)
+        if (viewModel.isLoading.value) {
+            LoadingIndicator()
+        }else {
+            LazyColumn(modifier = Modifier.padding(padding)) {
+                items(cartItems.value) { cartItem ->
+                    OrdersItemsCards(cartItem)
+                }
             }
         }
     }

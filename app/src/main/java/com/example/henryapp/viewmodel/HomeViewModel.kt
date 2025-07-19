@@ -1,5 +1,6 @@
 package com.example.henryapp.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,9 @@ class HomeViewModel @Inject constructor(
     private val productRepository: ProductRepository
 ) : ViewModel() {
 
+    private val _isLoading = mutableStateOf(true)
+    val isLoading: State<Boolean> = _isLoading
+
     val products = mutableStateListOf<Product>()
     val searchQuery = mutableStateOf("")
 
@@ -33,6 +37,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadProducts() {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val productList = productRepository.getProducts()
@@ -41,6 +46,9 @@ class HomeViewModel @Inject constructor(
                 products.addAll(productList)
             } catch (e: Exception) {
                 _errorEvents.emit("Error al cargar productos: ${e.message}")
+            }
+            finally {
+                _isLoading.value = false
             }
         }
     }

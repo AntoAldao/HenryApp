@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.CartItem
 import com.example.henryapp.navigation.BottomNavigationBar
+import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.PriceFilterDialog
 import com.example.henryapp.ui.componets.ProductList
 import com.example.henryapp.ui.theme.golden
@@ -181,39 +182,43 @@ fun HomeScreen(
                     }
                 )
             }
-
-            ProductList(
-                products = viewModel.products,
-                cartItems = cartItems.value,
-                onProductClick = { product ->
-                    navController.navigate("product/${product.id}")
-                },
-                onAddToCart = { product, quantity ->
-                    cartViewModel.addCartItem(
-                        CartItem(
-                            name = product.name,
-                            price = product.price,
-                            imageUrl = product.imageUrl,
-                            quantity = quantity,
-                            hasDrink = product.hasDrink,
-                            description = product.description ?: "",
+            if (viewModel.isLoading.value) {
+                LoadingIndicator()
+            }
+            else {
+                ProductList(
+                    products = viewModel.products,
+                    cartItems = cartItems.value,
+                    onProductClick = { product ->
+                        navController.navigate("product/${product.id}")
+                    },
+                    onAddToCart = { product, quantity ->
+                        cartViewModel.addCartItem(
+                            CartItem(
+                                name = product.name,
+                                price = product.price,
+                                imageUrl = product.imageUrl,
+                                quantity = quantity,
+                                hasDrink = product.hasDrink,
+                                description = product.description ?: "",
+                            )
                         )
-                    )
-                },
-                onIncreaseQuantity = { cartItem ->
-                    cartViewModel.updateCartItem(cartItem.copy(quantity = cartItem.quantity + 1))
-                },
-                onDecreaseQuantity = { cartItem ->
-                    if (cartItem.quantity > 1) {
-                        cartViewModel.updateCartItem(cartItem.copy(quantity = cartItem.quantity - 1))
-                    } else {
+                    },
+                    onIncreaseQuantity = { cartItem ->
+                        cartViewModel.updateCartItem(cartItem.copy(quantity = cartItem.quantity + 1))
+                    },
+                    onDecreaseQuantity = { cartItem ->
+                        if (cartItem.quantity > 1) {
+                            cartViewModel.updateCartItem(cartItem.copy(quantity = cartItem.quantity - 1))
+                        } else {
+                            cartViewModel.removeCartItem(cartItem)
+                        }
+                    },
+                    removeFromCart = { cartItem ->
                         cartViewModel.removeCartItem(cartItem)
                     }
-                },
-                removeFromCart = { cartItem ->
-                    cartViewModel.removeCartItem(cartItem)
-                }
-            )
+                )
+            }
         }
     }
 }
