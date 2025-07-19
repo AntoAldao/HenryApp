@@ -19,7 +19,7 @@ interface ApiService {
     suspend fun getProducts(): List<Product>
 
     @GET("foods/{id}")
-    suspend fun getProductById(@Path("id") id: Long): Product
+    suspend fun getProductById(@Path("id") id: String): Product
 
     @POST("users/login")
     suspend fun login(

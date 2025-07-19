@@ -12,7 +12,7 @@ class ProductRepository @Inject constructor(
         return apiService.getProducts()
     }
 
-    suspend fun getProductById(productId: Long): Product {
+    suspend fun getProductById(productId: String): Product {
         return apiService.getProductById(productId)
     }
 }

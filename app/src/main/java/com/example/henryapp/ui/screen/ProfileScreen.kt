@@ -66,12 +66,10 @@ fun ProfileScreen(
     val user by viewModel.user
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Cargar datos del usuario
     LaunchedEffect(userEmail) {
         viewModel.loadUser(userEmail)
     }
 
-    // Mostrar errores emitidos por el ViewModel
     LaunchedEffect(Unit) {
         viewModel.errorEvents.collect { errorMsg ->
             snackbarHostState.showSnackbar(errorMsg)

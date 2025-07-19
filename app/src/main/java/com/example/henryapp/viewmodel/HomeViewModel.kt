@@ -79,4 +79,26 @@ class HomeViewModel @Inject constructor(
         products.clear()
         products.addAll(allProducts)
     }
+
+    suspend fun getProductById(id: String): Product {
+        _isLoading.value = true
+        return try {
+            productRepository.getProductById(id)
+        } catch (e: Exception) {
+            viewModelScope.launch {
+                _errorEvents.emit("Error al obtener el producto")
+            }
+            return Product(
+                _id = "",
+                name = "",
+                price = 0.0,
+                imageUrl = "",
+                hasDrink = false,
+                description = ""
+            )
+        }
+        finally {
+            _isLoading.value = false
+        }
+    }
 }

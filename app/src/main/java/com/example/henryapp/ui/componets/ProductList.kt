@@ -1,6 +1,10 @@
 package com.example.henryapp.ui.componets
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,15 +29,13 @@ fun ProductList(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(products.chunked(2)) { rowItems ->  // Agrupa de 2 en 2
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.fillMaxSize(),
-            ) {
+        items(products.chunked(2)) { rowItems ->
+            Row(modifier = Modifier.fillMaxSize()) {
                 rowItems.forEach { product ->
                     val cartItem = cartItems.find { it.name == product.name }
                     val quantity = cartItem?.quantity ?: 0
 
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .padding(4.dp)
@@ -41,6 +43,7 @@ fun ProductList(
                         ProductCard(
                             product = product,
                             quantity = quantity,
+                            modifier = Modifier.clickable { onProductClick(product) },
                             onIncreaseQuantity = {
                                 if (cartItem != null) {
                                     onIncreaseQuantity(cartItem)
@@ -64,9 +67,10 @@ fun ProductList(
                 }
 
                 if (rowItems.size < 2) {
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
     }
 }
+

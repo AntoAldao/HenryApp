@@ -33,19 +33,18 @@ fun ProductCard(
     onIncreaseQuantity: () -> Unit,
     onDecreaseQuantity: () -> Unit,
     onAddToCart: (Product, Int) -> Unit,
-    removeFromCart: (Product) -> Unit
+    removeFromCart: (Product) -> Unit,
+    modifier: Modifier = Modifier // <- Nuevo parámetro
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Column(modifier = Modifier.padding(8.dp)) {
             AsyncImage(
                 model = product.imageUrl,
                 contentDescription = product.name,
@@ -63,7 +62,7 @@ fun ProductCard(
             )
 
             Text(
-                text = product.name ?: "", // cambiar a descripción si es necesario
+                text = product.description ?: "",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
@@ -76,8 +75,6 @@ fun ProductCard(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                // Botones de cantidad o Añadir
                 if (quantity > 0) {
                     Row {
                         Button(
@@ -119,7 +116,6 @@ fun ProductCard(
                         colors = ButtonDefaults.buttonColors(containerColor = golden)
                     ) {
                         Text("+", color = Color.Black, fontWeight = FontWeight.Bold)
-
                     }
                 }
             }

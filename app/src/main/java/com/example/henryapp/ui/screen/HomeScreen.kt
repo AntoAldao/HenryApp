@@ -190,7 +190,7 @@ fun HomeScreen(
                     products = viewModel.products,
                     cartItems = cartItems.value,
                     onProductClick = { product ->
-                        navController.navigate("product/${product.id}")
+                        navController.navigate("product/${product._id}")
                     },
                     onAddToCart = { product, quantity ->
                         cartViewModel.addCartItem(

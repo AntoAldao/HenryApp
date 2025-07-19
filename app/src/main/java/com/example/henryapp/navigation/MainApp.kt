@@ -10,6 +10,7 @@ import com.example.henryapp.ui.screen.HomeScreen
 import com.example.henryapp.ui.screen.LoginScreen
 import com.example.henryapp.ui.screen.OrderDetailScreen
 import com.example.henryapp.ui.screen.OrdersScreen
+import com.example.henryapp.ui.screen.ProductsDetailsScreen
 import com.example.henryapp.ui.screen.ProfileScreen
 import com.example.henryapp.ui.screen.RegisterScreen
 import com.example.henryapp.viewmodel.CartViewModel
@@ -43,6 +44,12 @@ fun MainApp() {
             val homeViewModel: HomeViewModel = hiltViewModel()
             val cartViewModel: CartViewModel = hiltViewModel()
             HomeScreen(navController, homeViewModel, cartViewModel, email)
+        }
+        composable("product/{id}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("id") ?: ""
+            val cartViewModel: CartViewModel = hiltViewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            ProductsDetailsScreen(navController, cartViewModel,homeViewModel, productId)
         }
         composable("orders/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
