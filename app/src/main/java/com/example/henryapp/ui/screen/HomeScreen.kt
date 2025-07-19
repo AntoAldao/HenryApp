@@ -19,11 +19,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.CartItem
 import com.example.henryapp.navigation.BottomNavigationBar
+import com.example.henryapp.ui.componets.PriceFilterDialog
 import com.example.henryapp.ui.componets.ProductList
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.viewmodel.CartViewModel
@@ -50,9 +53,9 @@ fun HomeScreen(
     email: String
 ) {
     val cartItems = cartViewModel.cartItems.collectAsState()
-    val categories = listOf("All", "Combos", "Sliders", "Classics", "Veggie", "Chicken", "Beef", "Fish", "Desserts")
-    val selectedCategoryIndex = remember { mutableIntStateOf(0) }
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.errorEvents.collect { message ->
@@ -71,7 +74,7 @@ fun HomeScreen(
             BottomNavigationBar(navController, email)
         },
         snackbarHost = {
-            androidx.compose.material3.SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         Column(
@@ -125,7 +128,7 @@ fun HomeScreen(
                     )
                 )
                 IconButton(
-                    onClick = { /* filtro pendiente */ },
+                    onClick = { showDialog.value = true },
                     modifier = Modifier
                         .padding(4.dp)
                         .size(48.dp)
@@ -141,31 +144,43 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-//            LazyRow(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 12.dp),
-//                contentPadding = PaddingValues(horizontal = 12.dp),
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//            ) {
-//                items(categories.size) { index ->
-//                    val category = categories[index]
-//                    Box(
-//                        modifier = Modifier
-//                            .background(
-//                                color = if (index == selectedCategoryIndex.intValue) golden else Color.LightGray,
-//                                shape = RoundedCornerShape(20.dp)
-//                            )
-//                            .padding(horizontal = 16.dp, vertical = 8.dp)
-//                            .clickable { selectedCategoryIndex.intValue = index }
-//                    ) {
-//                        Text(
-//                            text = category,
-//                            color = if (index == selectedCategoryIndex.intValue) Color.White else Color.Black
-//                        )
-//                    }
-//                }
-//            }
+            if (viewModel.minPriceFilter.value != null && viewModel.maxPriceFilter.value != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Filtrado por precio: \$${viewModel.minPriceFilter.value} - \$${viewModel.maxPriceFilter.value}",
+                        color = Color.DarkGray,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(
+                        onClick = {
+                            viewModel.clearPriceFilter()
+                        }
+                    ) {
+                        Text("x", color = Color.Red, fontSize = 12.sp)
+                    }
+                }
+            }
+
+
+            if (showDialog.value) {
+                PriceFilterDialog(
+                    currentMinPrice = viewModel.minPriceFilter.value,
+                    currentMaxPrice = viewModel.maxPriceFilter.value,
+                    onDismiss = { showDialog.value = false },
+                    onApply = { minPrice, maxPrice ->
+                        viewModel.filterProductsByPrice(minPrice, maxPrice)
+                        showDialog.value = false
+                    },
+                    onClear = {
+                        viewModel.clearPriceFilter()
+                    }
+                )
+            }
 
             ProductList(
                 products = viewModel.products,

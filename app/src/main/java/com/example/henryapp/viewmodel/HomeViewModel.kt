@@ -25,6 +25,9 @@ class HomeViewModel @Inject constructor(
     private val _errorEvents = MutableSharedFlow<String>()
     val errorEvents = _errorEvents.asSharedFlow()
 
+    val minPriceFilter = mutableStateOf<Double?>(null)
+    val maxPriceFilter = mutableStateOf<Double?>(null)
+
     init {
         loadProducts()
     }
@@ -50,5 +53,22 @@ class HomeViewModel @Inject constructor(
                 it.name.contains(query, ignoreCase = true)
             }
         )
+    }
+
+    fun filterProductsByPrice(minPrice: Double, maxPrice: Double) {
+        minPriceFilter.value = minPrice
+        maxPriceFilter.value = maxPrice
+        products.clear()
+        products.addAll(
+            allProducts.filter {
+                it.price in minPrice..maxPrice
+            }
+        )
+    }
+    fun clearPriceFilter() {
+        minPriceFilter.value = null
+        maxPriceFilter.value = null
+        products.clear()
+        products.addAll(allProducts)
     }
 }
