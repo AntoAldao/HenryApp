@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Brightness2
+import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -44,6 +47,7 @@ import com.example.henryapp.ui.componets.ProductList
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.viewmodel.CartViewModel
 import com.example.henryapp.viewmodel.HomeViewModel
+import com.example.henryapp.viewmodel.ThemeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,8 +55,11 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel,
     cartViewModel: CartViewModel = hiltViewModel(),
+    themeViewModel: ThemeViewModel,
     email: String
 ) {
+    val isDarkTheme = themeViewModel.isDarkTheme.collectAsState()
+
     val cartItems = cartViewModel.cartItems.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -83,17 +90,36 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
-            Text(
-                text = "Henry Food",
-                fontSize = 30.sp,
-                fontStyle = FontStyle.Italic,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
+            Row(
                 modifier = Modifier
-                    .padding(top = 30.dp)
-                    .padding(horizontal = 15.dp)
-            )
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Henry Food",
+                    fontSize = 30.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                        .padding(horizontal = 15.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+
+                IconButton(onClick = { themeViewModel.toggleTheme() }) {
+                    Icon(
+                        imageVector = if (isDarkTheme.value)
+                            Icons.Filled.Brightness7
+                        else
+                            Icons.Filled.Brightness2,
+                        contentDescription = "Toggle Theme",
+                        tint = Color.Gray
+                    )
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(15.dp))
 

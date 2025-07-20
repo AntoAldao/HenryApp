@@ -81,7 +81,7 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
                 fontSize = 38.sp,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = Color.Black,
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -90,7 +90,8 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
                 value = email.value,
                 onValueChange = { email.value = it },
                 label = "Email",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black,
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -99,7 +100,8 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
                 onValueChange = { password.value = it },
                 label ="Contraseña",
                 isPassword = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black
             )
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -4,23 +4,28 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,10 +80,17 @@ fun ProductsDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .background(MaterialTheme.colorScheme.background),
             ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ){
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -90,7 +101,11 @@ fun ProductsDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .border(BorderStroke(2.dp, golden), shape = RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
+                        .border(
+                            BorderStroke(2.dp, MaterialTheme.colorScheme.outline),
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .padding(8.dp)
                 )
 
@@ -99,23 +114,31 @@ fun ProductsDetailsScreen(
                 Text(
                     text = product.name,
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = product.description ?: "No description available.",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 100.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = product.description ?: "No description available.",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = "Precio unitario: $${String.format("%.2f", product.price)}",
                     fontSize = 14.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
 
@@ -126,7 +149,6 @@ fun ProductsDetailsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     if (existingCartItem != null) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
@@ -142,12 +164,13 @@ fun ProductsDetailsScreen(
                                     .size(36.dp)
                                     .background(golden, CircleShape)
                             ) {
-                                Text("-", color = Color.Black, fontSize = 20.sp)
+                                Text("-", color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp)
                             }
 
                             Text(
                                 text = quantity.value.toString(),
                                 fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.padding(horizontal = 12.dp)
                             )
 
@@ -160,9 +183,11 @@ fun ProductsDetailsScreen(
                                     .size(36.dp)
                                     .background(golden, CircleShape)
                             ) {
-                                Text("+", color = Color.Black, fontSize = 20.sp)
+                                Text("+", color = MaterialTheme.colorScheme.onPrimary, fontSize = 20.sp)
                             }
-                            Spacer(modifier = Modifier.height(12.dp).width(12.dp))
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
                             Row(
                                 modifier = Modifier
                                     .height(48.dp)
@@ -174,17 +199,13 @@ fun ProductsDetailsScreen(
                                     text = "Total: $${String.format("%.2f", product.price * quantity.value)}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.Black
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
-
                         }
-                    }else {
-
-
+                    } else {
                         Button(
                             onClick = {
-
                                 viewModel.addCartItem(
                                     CartItem(
                                         name = product.name,
@@ -195,7 +216,6 @@ fun ProductsDetailsScreen(
                                         description = product.description ?: "",
                                     )
                                 )
-
                             },
                             shape = RoundedCornerShape(50),
                             colors = ButtonDefaults.buttonColors(containerColor = golden),
@@ -204,14 +224,14 @@ fun ProductsDetailsScreen(
                                 .height(48.dp)
                         ) {
                             Text(
-                                text =
-                                    "Añadir al carrito",
-                                color = Color.Black,
+                                text = "Añadir al carrito",
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
+            }
             }
         }
     }

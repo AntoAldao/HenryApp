@@ -30,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -139,7 +140,7 @@ fun ProfileScreen(
 
                     Card(
                         modifier = Modifier.size(120.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
                     ) {
                         when {
                             imageUri != null -> Image(
@@ -172,7 +173,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color.White,
+                            MaterialTheme.colorScheme.background,
                             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                         )
                         .padding(16.dp)
@@ -205,7 +206,7 @@ fun ProfileScreen(
                             label = "Nombre",
                             modifier = Modifier.fillMaxWidth(),
                             enabled = isEditing,
-                            borderColor = Color.Black
+                            borderColor = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -215,7 +216,7 @@ fun ProfileScreen(
                             label = "Apellido",
                             modifier = Modifier.fillMaxWidth(),
                             enabled = isEditing,
-                            borderColor = Color.Black
+                            borderColor = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -225,7 +226,7 @@ fun ProfileScreen(
                             label = "Email",
                             modifier = Modifier.fillMaxWidth(),
                             enabled = false,
-                            borderColor = Color.Black
+                            borderColor = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -236,7 +237,7 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             isPassword = true,
                             enabled = isEditing,
-                            borderColor = Color.Black
+                            borderColor = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -246,7 +247,8 @@ fun ProfileScreen(
                             label = "Nacionalidad",
                             modifier = Modifier.fillMaxWidth(),
                             enabled = isEditing,
-                            borderColor = Color.Black
+                            borderColor = MaterialTheme.colorScheme.tertiary,
+
                         )
 
                         if (isEditing) {

@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +47,13 @@ fun OrdersScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Pedidos") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Pedidos") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+            ) },
         bottomBar = { BottomNavigationBar(navController, email) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->

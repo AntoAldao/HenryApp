@@ -19,9 +19,10 @@ import com.example.henryapp.viewmodel.LoginViewModel
 import com.example.henryapp.viewmodel.OrderViewModel
 import com.example.henryapp.viewmodel.ProfileViewModel
 import com.example.henryapp.viewmodel.RegisterViewModel
+import com.example.henryapp.viewmodel.ThemeViewModel
 
 @Composable
-fun MainApp() {
+fun MainApp(themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login") {
@@ -43,7 +44,7 @@ fun MainApp() {
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val homeViewModel: HomeViewModel = hiltViewModel()
             val cartViewModel: CartViewModel = hiltViewModel()
-            HomeScreen(navController, homeViewModel, cartViewModel, email)
+            HomeScreen(navController, homeViewModel, cartViewModel,themeViewModel,email)
         }
         composable("product/{id}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("id") ?: ""

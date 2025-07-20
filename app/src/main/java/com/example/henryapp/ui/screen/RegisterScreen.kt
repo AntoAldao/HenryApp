@@ -91,7 +91,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 text = "Henry Food",
                 fontSize = 38.sp,
                 fontStyle = FontStyle.Italic,
-                color = Color.White,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -101,7 +101,8 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 value = viewModel.name.value,
                 onValueChange = { viewModel.name.value = it },
                 label = "Nombre",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -110,7 +111,9 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 value = viewModel.lastName.value,
                 onValueChange = { viewModel.lastName.value = it },
                 label = "Apellido",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black
+
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -119,7 +122,8 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 value = viewModel.email.value,
                 onValueChange = { viewModel.email.value = it },
                 label = "Email",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black
             )
             if (!viewModel.isEmailValid.value && viewModel.email.value.isNotEmpty()) {
                 Text(
@@ -137,6 +141,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 label = "Contraseña",
                 modifier = Modifier.fillMaxWidth(),
                 isPassword = true,
+                borderColor = Color.Black
             )
             if (!viewModel.isPasswordValid.value && viewModel.password.value.isNotEmpty()) {
                 Text(
@@ -154,6 +159,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 label = "Confirmar contraseña",
                 modifier = Modifier.fillMaxWidth(),
                 isPassword = true,
+                borderColor = Color.Black
             )
             if (!viewModel.isPasswordMatch.value) {
                 Text(
@@ -169,7 +175,8 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
                 value = viewModel.nationality.value,
                 onValueChange = { viewModel.nationality.value = it },
                 label = "Nacionalidad",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                borderColor = Color.Black
             )
             Spacer(modifier = Modifier.height(16.dp))
 

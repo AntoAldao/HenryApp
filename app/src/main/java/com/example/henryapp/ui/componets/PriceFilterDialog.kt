@@ -9,6 +9,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ fun PriceFilterDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Filtrar por precio") },
+        backgroundColor = MaterialTheme.colorScheme.secondary,
         text = {
             Column {
                 OutlinedTextField(

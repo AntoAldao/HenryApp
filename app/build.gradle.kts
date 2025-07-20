@@ -117,6 +117,7 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.gson)
     implementation (libs.jetbrains.kotlinx.coroutines.android)
+    implementation(libs.androidx.material.icons.extended)
     kapt(libs.hilt.android.compiler)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)

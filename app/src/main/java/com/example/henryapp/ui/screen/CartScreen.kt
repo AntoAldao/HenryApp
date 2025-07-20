@@ -122,7 +122,7 @@ fun CartScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Volver al home",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
 

@@ -22,13 +22,13 @@ import com.example.core.model.data.entity.CartItem
 
 @Composable
 fun OrdersItemsCards(item: CartItem) {
-        Card(
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 6.dp)
-        ) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
             Row(
                 modifier = Modifier
                     .padding(12.dp),

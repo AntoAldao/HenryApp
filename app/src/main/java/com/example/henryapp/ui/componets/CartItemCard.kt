@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,6 +39,8 @@ fun CartItemCard(item: CartItem, onIncrease: () -> Unit, onDecrease: () -> Unit,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 6.dp)
+                .background(MaterialTheme.colorScheme.primary)
+
         ) {
             Row(
                 modifier = Modifier
@@ -56,7 +59,7 @@ fun CartItemCard(item: CartItem, onIncrease: () -> Unit, onDecrease: () -> Unit,
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(item.name, fontWeight = FontWeight.Bold)
-                    Text("$${"%.2f".format(item.price*item.quantity)}", color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text("$${"%.2f".format(item.price*item.quantity)}", color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -89,7 +92,6 @@ fun CartItemCard(item: CartItem, onIncrease: () -> Unit, onDecrease: () -> Unit,
                     }
 
 
-                // Eliminar
                 IconButton(
                     onClick = onRemove,
                     modifier = Modifier

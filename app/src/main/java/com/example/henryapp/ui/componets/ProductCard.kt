@@ -1,14 +1,18 @@
 package com.example.henryapp.ui.componets
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,49 +38,60 @@ fun ProductCard(
     onDecreaseQuantity: () -> Unit,
     onAddToCart: (Product, Int) -> Unit,
     removeFromCart: (Product) -> Unit,
-    modifier: Modifier = Modifier // <- Nuevo parámetro
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .height(300.dp) // 👈 altura fija para toda la tarjeta
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
             AsyncImage(
                 model = product.imageUrl,
                 contentDescription = product.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = product.name,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 2.dp)
-            )
-
-            Text(
-                text = product.description ?: "",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                    .height(80.dp) // 👈 altura fija para la imagen
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
+            Text(
+                text = product.name,
+                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.tertiary),
+                modifier = Modifier.padding(vertical = 2.dp)
+            )
+
+            // 👇 Scroll SOLO en la descripción
+            Box(
                 modifier = Modifier
+                    .weight(1f) // toma el espacio sobrante
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = product.description ?: "",
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (quantity > 0) {
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(
                             onClick = onDecreaseQuantity,
                             contentPadding = PaddingValues(horizontal = 8.dp),
@@ -103,13 +118,13 @@ fun ProductCard(
                     }
                 } else {
                     Text(
-                        modifier = Modifier.align(Alignment.Bottom),
                         text = "$${product.price}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = golden,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
+
                     Button(
                         onClick = { onAddToCart(product, 1) },
                         shape = RoundedCornerShape(100),
