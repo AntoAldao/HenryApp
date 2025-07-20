@@ -47,7 +47,7 @@ Aplicación móvil desarrollada en **Kotlin** utilizando **Jetpack Compose**, **
 ## Consideraciones sobre la API
 
 - Se realizó un cambio en la API para separar órdenes por usuario (correo), evitando mezclar órdenes de distintos usuarios.
-- Para pruebas, copiar la base URL desde `local.properties`.
+- Para pruebas, se puede utilizar la siguente url: https://peyademoappapi-main.onrender.com/
 - Recomendación: realizar una consulta previa por Postman o web para "despertar" el servicio de Render (versión free puede demorar más de 50 segundos en la primera consulta tras inactividad).
 
 ## Instalación y ejecución
@@ -57,7 +57,12 @@ Aplicación móvil desarrollada en **Kotlin** utilizando **Jetpack Compose**, **
    git clone https://github.com/AntoAldao/HenryApp.git
    ```
 2. Abrir en **Android Studio**.
-3. Configurar la base URL en `local.properties`.
+3. Configurar en `local.properties`
+```
+    CLOUDINARY_CLOUD_NAME=cloudinary_name
+    CLOUDINARY_UPLOAD_PRESET=cloudinary_preset
+    BASE_URL=https://peyademoappapi-main.onrender.com/
+```
 4. Compilar y ejecutar en un dispositivo/emulador Android.
 
 ## Tecnologías utilizadas

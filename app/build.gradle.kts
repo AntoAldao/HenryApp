@@ -118,6 +118,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation (libs.jetbrains.kotlinx.coroutines.android)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.work.runtime.ktx)
     kapt(libs.hilt.android.compiler)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)

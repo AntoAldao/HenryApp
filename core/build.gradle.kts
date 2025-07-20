@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.okhttp)
+    implementation(libs.androidx.work.runtime.ktx)
     kapt(libs.hilt.android.compiler)
     kapt(libs.androidx.room.compiler)
     implementation(libs.retrofit2.retrofit)

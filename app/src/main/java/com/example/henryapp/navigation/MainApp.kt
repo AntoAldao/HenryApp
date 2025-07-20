@@ -7,6 +7,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.core.worker.SyncWorker
 import com.example.henryapp.preference.SessionManager
 import com.example.henryapp.ui.screen.CartScreen
 import com.example.henryapp.ui.screen.HomeScreen
@@ -23,11 +29,28 @@ import com.example.henryapp.viewmodel.OrderViewModel
 import com.example.henryapp.viewmodel.ProfileViewModel
 import com.example.henryapp.viewmodel.RegisterViewModel
 import com.example.henryapp.viewmodel.ThemeViewModel
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun MainApp(themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "SyncWorker",
+            ExistingPeriodicWorkPolicy.KEEP,
+            syncRequest
+        )
+    }
 
     NavHost(navController = navController, startDestination = "root") {
         composable("root") {
@@ -44,9 +67,9 @@ fun MainApp(themeViewModel: ThemeViewModel) {
                 }
             }
         }
+
         composable("login") {
             val loginViewModel: LoginViewModel = hiltViewModel()
-
             LoginScreen(
                 viewModel = loginViewModel,
                 onLoginSuccess = {
@@ -58,23 +81,27 @@ fun MainApp(themeViewModel: ThemeViewModel) {
                 navController = navController
             )
         }
+
         composable("home/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val homeViewModel: HomeViewModel = hiltViewModel()
             val cartViewModel: CartViewModel = hiltViewModel()
             HomeScreen(navController, homeViewModel, cartViewModel, themeViewModel, email)
         }
+
         composable("product/{id}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("id") ?: ""
             val cartViewModel: CartViewModel = hiltViewModel()
             val homeViewModel: HomeViewModel = hiltViewModel()
             ProductsDetailsScreen(navController, cartViewModel, homeViewModel, productId)
         }
+
         composable("orders/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val ordersViewModel: OrderViewModel = hiltViewModel()
             OrdersScreen(navController, ordersViewModel, email)
         }
+
         composable("profile/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val profileViewModel: ProfileViewModel = hiltViewModel()
@@ -87,15 +114,16 @@ fun MainApp(themeViewModel: ThemeViewModel) {
                 }
             )
         }
+
         composable("cart/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val cartViewModel: CartViewModel = hiltViewModel()
             val orderViewModel: OrderViewModel = hiltViewModel()
             CartScreen(navController, cartViewModel, orderViewModel, email)
         }
+
         composable("register") {
             val registerViewModel: RegisterViewModel = hiltViewModel()
-
             RegisterScreen(
                 viewModel = registerViewModel,
                 onRegisterSuccess = {
@@ -109,6 +137,7 @@ fun MainApp(themeViewModel: ThemeViewModel) {
                 },
             )
         }
+
         composable("orderDetail/{email}/{orderId}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
