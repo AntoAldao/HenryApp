@@ -1,5 +1,6 @@
 package com.example.henryapp.ui.screen
 
+import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -79,6 +80,7 @@ fun ProfileScreen(
 
     var isEditing by remember { mutableStateOf(false) }
     var showSuccessMessage by remember { mutableStateOf(false) }
+    var showPermissionDeniedMessage by remember { mutableStateOf(false) }
 
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -101,12 +103,33 @@ fun ProfileScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri -> imageUri = uri }
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
+        val storageGranted = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false ||
+                permissions[Manifest.permission.READ_MEDIA_IMAGES] ?: false
+
+        if (cameraGranted && storageGranted) {
+            imagePickerLauncher.launch("image/*")
+        } else {
+            showPermissionDeniedMessage = true
+        }
+    }
+
+    LaunchedEffect(showPermissionDeniedMessage) {
+        if (showPermissionDeniedMessage) {
+            snackbarHostState.showSnackbar("Se requieren permisos para acceder a la cámara y galería.")
+            showPermissionDeniedMessage = false
+        }
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         if (viewModel.isLoading.value) {
             LoadingIndicator()
-        }else {
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -137,7 +160,6 @@ fun ProfileScreen(
                         )
                     }
 
-
                     Card(
                         modifier = Modifier.size(120.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -158,16 +180,14 @@ fun ProfileScreen(
                             )
                         }
                     }
-
-
                 }
+
                 LaunchedEffect(showSuccessMessage) {
                     if (showSuccessMessage) {
                         snackbarHostState.showSnackbar("Perfil actualizado correctamente")
                         showSuccessMessage = false
                     }
                 }
-
 
                 Box(
                     modifier = Modifier
@@ -182,7 +202,21 @@ fun ProfileScreen(
 
                         if (isEditing) {
                             OutlinedButton(
-                                onClick = { imagePickerLauncher.launch("image/*") },
+                                onClick = {
+                                    permissionLauncher.launch(
+                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                            arrayOf(
+                                                Manifest.permission.CAMERA,
+                                                Manifest.permission.READ_MEDIA_IMAGES
+                                            )
+                                        } else {
+                                            arrayOf(
+                                                Manifest.permission.CAMERA,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                            )
+                                        }
+                                    )
+                                },
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
                                 colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.White,
@@ -248,7 +282,6 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = isEditing,
                             borderColor = MaterialTheme.colorScheme.tertiary,
-
                         )
 
                         if (isEditing) {
@@ -348,7 +381,6 @@ fun ProfileScreen(
                         }
                     }
                 }
-
             }
         }
     }
