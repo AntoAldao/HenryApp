@@ -1,10 +1,13 @@
 package com.example.henryapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.henryapp.preference.SessionManager
 import com.example.henryapp.ui.screen.CartScreen
 import com.example.henryapp.ui.screen.HomeScreen
 import com.example.henryapp.ui.screen.LoginScreen
@@ -24,8 +27,23 @@ import com.example.henryapp.viewmodel.ThemeViewModel
 @Composable
 fun MainApp(themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "root") {
+        composable("root") {
+            LaunchedEffect(Unit) {
+                val savedEmail = SessionManager.getUserEmail(context)
+                if (!savedEmail.isNullOrEmpty()) {
+                    navController.navigate("home/$savedEmail") {
+                        popUpTo("root") { inclusive = true }
+                    }
+                } else {
+                    navController.navigate("login") {
+                        popUpTo("root") { inclusive = true }
+                    }
+                }
+            }
+        }
         composable("login") {
             val loginViewModel: LoginViewModel = hiltViewModel()
 
@@ -44,13 +62,13 @@ fun MainApp(themeViewModel: ThemeViewModel) {
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val homeViewModel: HomeViewModel = hiltViewModel()
             val cartViewModel: CartViewModel = hiltViewModel()
-            HomeScreen(navController, homeViewModel, cartViewModel,themeViewModel,email)
+            HomeScreen(navController, homeViewModel, cartViewModel, themeViewModel, email)
         }
         composable("product/{id}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("id") ?: ""
             val cartViewModel: CartViewModel = hiltViewModel()
             val homeViewModel: HomeViewModel = hiltViewModel()
-            ProductsDetailsScreen(navController, cartViewModel,homeViewModel, productId)
+            ProductsDetailsScreen(navController, cartViewModel, homeViewModel, productId)
         }
         composable("orders/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
@@ -60,7 +78,8 @@ fun MainApp(themeViewModel: ThemeViewModel) {
         composable("profile/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             val profileViewModel: ProfileViewModel = hiltViewModel()
-            ProfileScreen(navController, email, profileViewModel,
+            ProfileScreen(
+                navController, email, profileViewModel,
                 onLogout = {
                     navController.navigate("login") {
                         popUpTo("home/{email}") { inclusive = true }
@@ -77,7 +96,8 @@ fun MainApp(themeViewModel: ThemeViewModel) {
         composable("register") {
             val registerViewModel: RegisterViewModel = hiltViewModel()
 
-            RegisterScreen(viewModel = registerViewModel,
+            RegisterScreen(
+                viewModel = registerViewModel,
                 onRegisterSuccess = {
                     val email = registerViewModel.email.value
                     navController.navigate("home/$email") {
@@ -91,7 +111,7 @@ fun MainApp(themeViewModel: ThemeViewModel) {
         }
         composable("orderDetail/{email}/{orderId}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
-            val orderId = backStackEntry.arguments?.getString("orderId")?: ""
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
             val orderViewModel: OrderViewModel = hiltViewModel()
             OrderDetailScreen(navController, orderId, orderViewModel, email)
         }

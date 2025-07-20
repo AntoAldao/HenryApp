@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.henryapp.R
+import com.example.henryapp.preference.SessionManager
 import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.theme.golden
 import com.example.henryapp.ui.theme.goldenTransparent
@@ -121,6 +122,7 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, navContro
             }
 
             if (loginState == true) {
+                SessionManager.saveUserEmail(viewModel.appContext, email.value)
                 onLoginSuccess()
             }
 

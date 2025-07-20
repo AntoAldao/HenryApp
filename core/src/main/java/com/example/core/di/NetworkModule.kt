@@ -1,5 +1,6 @@
 package com.example.core.di
 
+import com.example.core.BuildConfig
 import com.example.core.model.data.remote.ApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://peyademoappapi-main.onrender.com/"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     @Provides
     @Singleton

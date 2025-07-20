@@ -37,6 +37,11 @@ android {
             "CLOUDINARY_UPLOAD_PRESET",
             "\"${project.findProperty("CLOUDINARY_UPLOAD_PRESET")?.toString() ?: ""}\""
         )
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"${project.findProperty("BASE_URL")?.toString() ?: ""}\""
+        )
     }
 
     buildFeatures {
@@ -60,6 +65,11 @@ android {
                 "CLOUDINARY_UPLOAD_PRESET",
                 "\"${project.findProperty("CLOUDINARY_UPLOAD_PRESET")?.toString() ?: ""}\""
             )
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"${project.findProperty("BASE_URL")?.toString() ?: ""}\""
+            )
         }
         debug {
             buildConfigField(
@@ -71,6 +81,11 @@ android {
                 "String",
                 "CLOUDINARY_UPLOAD_PRESET",
                 "\"${project.findProperty("CLOUDINARY_UPLOAD_PRESET")?.toString() ?: ""}\""
+            )
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"${project.findProperty("BASE_URL")?.toString() ?: ""}\""
             )
         }
     }

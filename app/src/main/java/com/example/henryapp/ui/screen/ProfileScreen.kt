@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.henryapp.preference.SessionManager
 import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.theme.golden
@@ -361,7 +362,10 @@ fun ProfileScreen(
                                     Text("Editar Perfil")
                                 }
                                 OutlinedButton(
-                                    onClick = { onLogout() },
+                                    onClick = {
+                                        onLogout()
+                                        SessionManager.clearUserEmail(context)
+                                              },
                                     modifier = Modifier.requiredHeight(50.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         contentColor = Color.White,
