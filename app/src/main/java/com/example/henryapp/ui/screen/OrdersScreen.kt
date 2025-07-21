@@ -17,9 +17,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.OrderResponse
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.navigation.BottomNavigationBar
 import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.OrderCard
@@ -35,6 +37,15 @@ fun OrdersScreen(
 ) {
     val orders = remember { mutableStateOf(emptyList<OrderResponse>()) }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(email) {
         orders.value = viewModel.getOrdersByEmail(email)

@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.CartItem
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.navigation.BottomNavigationBar
 import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.PriceFilterDialog
@@ -64,6 +66,15 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val showDialog = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(Unit) {
         viewModel.errorEvents.collect { message ->

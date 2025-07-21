@@ -128,13 +128,14 @@ fun MainApp(themeViewModel: ThemeViewModel) {
                 viewModel = registerViewModel,
                 onRegisterSuccess = {
                     val email = registerViewModel.email.value
+                    SessionManager.saveUserEmail(context, email)
                     navController.navigate("home/$email") {
                         popUpTo("register") { inclusive = true }
                     }
                 },
                 onRegisterError = { errorMessage ->
-                    println("Registration error: $errorMessage")
                 },
+                navController = navController
             )
         }
 

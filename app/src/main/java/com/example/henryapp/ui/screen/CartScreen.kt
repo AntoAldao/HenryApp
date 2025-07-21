@@ -39,11 +39,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.Order
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.ui.componets.CartItemCard
 import com.example.henryapp.viewmodel.CartViewModel
 import com.example.henryapp.viewmodel.OrderViewModel
@@ -63,6 +65,15 @@ fun CartScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val orderSuccess = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(Unit) {
         viewModel.errorEvents.collect { message ->

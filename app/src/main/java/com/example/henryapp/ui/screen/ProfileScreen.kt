@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.preference.SessionManager
 import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.componets.LoadingIndicator
@@ -68,6 +69,14 @@ fun ProfileScreen(
     val context = LocalContext.current
     val user by viewModel.user
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(userEmail) {
         viewModel.loadUser(userEmail)

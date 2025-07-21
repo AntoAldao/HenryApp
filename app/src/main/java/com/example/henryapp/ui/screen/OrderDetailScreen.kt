@@ -20,8 +20,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.core.model.data.entity.CartItem
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.ui.componets.LoadingIndicator
 import com.example.henryapp.ui.componets.OrdersItemsCards
 import com.example.henryapp.viewmodel.OrderViewModel
@@ -36,6 +38,15 @@ fun OrderDetailScreen(
 ) {
     val cartItems = remember { mutableStateOf(emptyList<CartItem>()) }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(Unit) {
         viewModel.errorEvents.collect { message ->

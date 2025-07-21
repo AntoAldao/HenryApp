@@ -24,12 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.core.util.NetworkUtils
 import com.example.henryapp.R
 import com.example.henryapp.ui.componets.CustomOutlinedTextField
 import com.example.henryapp.ui.theme.golden
@@ -38,9 +41,23 @@ import com.example.henryapp.viewmodel.RegisterViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuccess: () -> Unit, onRegisterError: (errorMessage:String) -> Unit) {
+fun RegisterScreen(
+    viewModel: RegisterViewModel = hiltViewModel(),
+    onRegisterSuccess: () -> Unit,
+    onRegisterError: (errorMessage:String) -> Unit,
+    navController: NavController
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    val isConnected = NetworkUtils.isConnected(context)
+
+
+    if (!isConnected) {
+        NoConnectionScreen(navController = navController)
+        return
+    }
 
     LaunchedEffect(
         key1 = listOf(
@@ -207,11 +224,10 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegisterSuc
         Image(
             painter = painterResource(id = R.drawable.hamburgesa),
             contentDescription = "Decoración",
-//            contentScale = ContentScale
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .height(300.dp) // ajustalo según el tamaño que quieras
-                .offset(x= -60.dp) // ajusta el desplazamiento según sea necesario
+                .height(300.dp)
+                .offset(x= -60.dp)
         )
         SnackbarHost(
             hostState = snackbarHostState,
